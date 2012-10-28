@@ -11,4 +11,4 @@ gdbserver
 local.properties
 .settings
 GodSim.iml
-/project.properties
+project.properties
