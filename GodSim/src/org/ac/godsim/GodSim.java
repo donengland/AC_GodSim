@@ -20,11 +20,8 @@ import org.andengine.util.adt.io.in.IInputStreamOpener;
 import org.andengine.util.debug.Debug;
 
 /**
- * (c) 2010 Nicolas Gramlich
- * (c) 2011 Zynga
- *
- * @author Nicolas Gramlich
- * @since 11:54:51 - 03.04.2010
+ * @author Don England
+ * @since 2349 - 27-October-2012
  */
 public class GodSim extends SimpleBaseGameActivity {
 	// ===========================================================
