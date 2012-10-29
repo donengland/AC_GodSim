@@ -1,7 +1,7 @@
 GodSim Android Game
 ==========================================
 
-* Author:    Don England (<englandpro@gmail.com>)
+* Author:    Don England
 * Date:      October, 2012
 * Last mod.: October, 2012
 * Version:   0.0.1
