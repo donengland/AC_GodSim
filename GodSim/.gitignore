@@ -12,7 +12,5 @@ local.properties
 .settings
 GodSim.iml
 project.properties
-
 /gen
-
 /bin
