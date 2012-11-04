@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="40" height="40" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="d6_tile" tilewidth="32" tileheight="32" spacing="3" margin="2">
+  <image source="gfx/desert_tiled.png" width="281" height="211"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="40" height="40">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+3WywrCMBAF0KgrdaWuVGipQqkK/v/neQsVQphk6iuZyl0cWtqUTB6TTuWcq160hwMc3/j227rh2nrPGjjBuVAsmgtc4WZg/lJqAzFo89pm6F8ygzksDMyPNAdLWMHaQHyhfl9tYAs7ZSxjc+qfSWdcql1pXeQ+tc6/9DzHwlik881SXktK5bW2XvXQJpbXuUx1/fy9ec8ck993bP1K1nxaHdK/L1XzjWWl5pvKP+TTcRAREREREYUenquw4AAZAAA=
+  </data>
+ </layer>
+</map>
