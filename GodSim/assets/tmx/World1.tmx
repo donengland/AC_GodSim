@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="40" height="40" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="World1_Tiles" tilewidth="32" tileheight="32" spacing="3" margin="2">
+  <image source="gfx/desert_tiled.png" width="281" height="211"/>
+ </tileset>
+ <layer name="Ground" width="40" height="40">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC82XSU/DMBCFDZyAE9uBrXVboAWkNv//12FELI3M2LN53B4+KYuSeX5vbCeLEMIusaigvSdhYl7joNH00Wkc2ho1zVoPrHjminmBefOYeBLyPNCXVWItZDMww576ovA6dQ/qe0t8zazB8fsg/2q9vipqLufzZcPfDfHOzLaDRkrfJ/Ay823wicqTq2/PeHZSeMQBrkfZH40n1H5xcNDulZk0V4qcG7b2W2tRvuZ54r2fj/he8O4BbAwRya98fqocS3PjzhHpN9Cxvpk01PrIsn5g62uZIXXdczxniauZiyP52+IS6Ls21tfsYdQzLX3leLV9ZNl7Lf71XFd/++wc4RXRFzvWhbTeC32qYe0/2AdSb0fq0/QD1HefuE08GPVtAz5nNPOhnAc7xNNSX2SMW+IRV99L+D83vPOVrHNe/WfZZ2/CX8+1uHPW4vGPVCM29Jb3vDQfFPUwrPuMpr6lJlVP+u5T+T/F9HP7o3fvazLVcGreW30e8S/MzUaT4Q860U6+ABkAAA==
+  </data>
+ </layer>
+ <objectgroup name="Objects" width="40" height="40">
+  <object name="Face" x="640" y="448" width="32" height="32">
+   <properties>
+    <property name="face" value="true"/>
+   </properties>
+  </object>
+  <object name="face" x="320" y="576" width="32" height="32">
+   <properties>
+    <property name="face" value="true"/>
+   </properties>
+  </object>
+  <object name="Face" x="800" y="928" width="32" height="32">
+   <properties>
+    <property name="face" value="true"/>
+   </properties>
+  </object>
+  <object name="Face" x="1152" y="416" width="32" height="32">
+   <properties>
+    <property name="face" value="true"/>
+   </properties>
+  </object>
+  <object name="Face" x="224" y="1088" width="32" height="32">
+   <properties>
+    <property name="face" value="true"/>
+   </properties>
+  </object>
+  <object name="wall" x="205" y="141" width="7" height="232">
+   <properties>
+    <property name="wall" value="true"/>
+   </properties>
+  </object>
+  <object name="wall" x="214" y="142" width="413" height="6">
+   <properties>
+    <property name="wall" value="true"/>
+   </properties>
+  </object>
+  <object name="wall" x="271" y="238" width="79" height="5">
+   <properties>
+    <property name="wall" value="true"/>
+   </properties>
+  </object>
+  <object name="wall" x="385" y="238" width="79" height="5">
+   <properties>
+    <property name="wall" value="true"/>
+   </properties>
+  </object>
+  <object name="wall" x="463" y="304" width="165" height="4">
+   <properties>
+    <property name="wall" value="true"/>
+   </properties>
+  </object>
+  <object name="wall" x="272" y="246" width="5" height="124">
+   <properties>
+    <property name="wall" value="true"/>
+   </properties>
+  </object>
+  <object name="wall" x="215" y="367" width="55" height="4">
+   <properties>
+    <property name="wall" value="true"/>
+   </properties>
+  </object>
+  <object name="wall" x="622" y="151" width="6" height="150">
+   <properties>
+    <property name="wall" value="true"/>
+   </properties>
+  </object>
+  <object name="wall" x="462" y="245" width="6" height="56">
+   <properties>
+    <property name="wall" value="true"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

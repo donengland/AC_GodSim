@@ -59,10 +59,15 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 
 	private SmoothCamera mSmoothChaseCamera;
 
-	private BitmapTextureAtlas mBitmapTextureAtlas;
+	private BitmapTextureAtlas mBitmapTextureAtlas;	
 	private TiledTextureRegion mPlayerTextureRegion;
+	
+	private TiledTextureRegion mBoxFaceTextureRegion;
+	private TiledTextureRegion mCircleFaceTextureRegion;
+	
 	private TMXTiledMap mTMXTiledMap;
 	protected int mWallCount;
+	private int tileWidth = 32;
 	
 	private AnimatedSprite player;
 	
@@ -99,8 +104,9 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	public void onCreateResources() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 
-		this.mBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 72, 128, TextureOptions.DEFAULT);
-		this.mPlayerTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "player.png", 0, 0, 3, 4);
+		this.mBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 64, 64, TextureOptions.DEFAULT);
+		this.mBoxFaceTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "face_box_tiled.png", 0, 0, 2, 1); // 64x32
+		this.mCircleFaceTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "face_circle_tiled.png", 0, 32, 2, 1); // 64x32
 
 		this.mBitmapTextureAtlas.load();
 	}
@@ -115,7 +121,6 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 			final TMXLoader tmxLoader = new TMXLoader(this.getAssets(), this.mEngine.getTextureManager(), TextureOptions.BILINEAR_PREMULTIPLYALPHA, this.getVertexBufferObjectManager(), new ITMXTilePropertiesListener() {
 				@Override
 				public void onTMXTileWithPropertiesCreated(final TMXTiledMap pTMXTiledMap, final TMXLayer pTMXLayer, final TMXTile pTMXTile, final TMXProperties<TMXTileProperty> pTMXTileProperties) {
-					/* We are going to count the tiles that have the property "cactus=true" set. */
 					if(pTMXTileProperties.containsTMXProperty("wall", "true")) {
 						GodSim.this.mWallCount++;
 					}
@@ -123,9 +128,13 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 					if(pTMXTileProperties.containsTMXProperty("civ", "true")){
 						
 					}
+					if(pTMXTileProperties.containsTMXProperty("Face", "true")){
+						System.out.println("Face at (x):" + pTMXTile.getTileColumn()*tileWidth + " (y):" + pTMXTile.getTileRow()*tileWidth);
+						addFace(pTMXTile.getTileColumn()*tileWidth, pTMXTile.getTileRow()*tileWidth);
+					}
 				}
 			});
-			this.mTMXTiledMap = tmxLoader.loadFromAsset("tmx/d6.tmx");
+			this.mTMXTiledMap = tmxLoader.loadFromAsset("tmx/World1.tmx");
 
 			this.runOnUiThread(new Runnable() {
 				@Override
@@ -143,35 +152,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		/* Make the camera not exceed the bounds of the TMXEntity. */
 		this.mSmoothChaseCamera.setBounds(0, 0, tmxLayer.getHeight(), tmxLayer.getWidth());
 		this.mSmoothChaseCamera.setBoundsEnabled(true);
-
-		/* Calculate the coordinates for the face, so its centered on the camera. */
-		final float centerX = (CAMERA_WIDTH - this.mPlayerTextureRegion.getWidth()) / 2;
-		final float centerY = (CAMERA_HEIGHT - this.mPlayerTextureRegion.getHeight()) / 2;
-
-		/* Create the sprite and add it to the scene. */
-		player = new AnimatedSprite(centerX, centerY, this.mPlayerTextureRegion, this.getVertexBufferObjectManager());
-		//this.mSmoothChaseCamera.setChaseEntity(player);
 		this.mSmoothChaseCamera.setCenter(camTargetX, camTargetY);
-		player.setVisible(false);
-
-		this.mScene.registerUpdateHandler(new IUpdateHandler() {
-			@Override
-			public void reset() { }
-
-			@Override
-			public void onUpdate(final float pSecondsElapsed) {
-				/* Get the scene-coordinates of the players feet. */
-				final float[] playerFootCordinates = player.convertLocalToSceneCoordinates(12, 31);
-
-				/* Get the tile the feet of the player are currently waking on. */
-				final TMXTile tmxTile = tmxLayer.getTMXTileAt(playerFootCordinates[Constants.VERTEX_INDEX_X], playerFootCordinates[Constants.VERTEX_INDEX_Y]);
-				if(tmxTile != null) {
-					tmxTile.setTextureRegion(null);// <-- Rubber-style removing of tiles =D
-					//currentTileRectangle.setPosition(tmxTile.getTileX(), tmxTile.getTileY());
-				}
-			}
-		});
-		this.mScene.attachChild(player);
 
 		this.mScene.setOnSceneTouchListener(this);
 
@@ -182,6 +163,14 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	// Methods
 	// ===========================================================
 
+	private void addFace(final float pX, final float pY) {
+		final AnimatedSprite face;
+		face = new AnimatedSprite(pX, pY, this.mBoxFaceTextureRegion, this.getVertexBufferObjectManager());
+		face.animate(200, true);
+
+		this.mScene.registerTouchArea(face);
+		this.mScene.attachChild(face);
+	}
 
 	public boolean onSceneTouchEvent(final Scene pScene, final TouchEvent pSceneTouchEvent) {
 		if(pSceneTouchEvent.isActionDown()) {
@@ -190,6 +179,9 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		}
 		if(pSceneTouchEvent.isActionMove()) {
 			this.moveCamera(pSceneTouchEvent.getMotionEvent().getX(), pSceneTouchEvent.getMotionEvent().getY());
+			return true;
+		}if(pSceneTouchEvent.isActionUp()) {
+			this.addFace(pSceneTouchEvent.getX(), pSceneTouchEvent.getY());
 			return true;
 		}
 		return false;
