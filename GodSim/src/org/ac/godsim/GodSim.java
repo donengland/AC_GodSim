@@ -37,11 +37,10 @@ import org.andengine.util.debug.Debug;
 import android.widget.Toast;
 
 /**
- * (c) 2010 Nicolas Gramlich
- * (c) 2011 Zynga
+ * (c) 2012 Don England
  *
- * @author Nicolas Gramlich
- * @since 13:58:48 - 19.07.2010
+ * @author Don England
+ * @since 10-November-2012
  */
 public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListener{
 	// ===========================================================
@@ -120,6 +119,10 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 					if(pTMXTileProperties.containsTMXProperty("wall", "true")) {
 						GodSim.this.mWallCount++;
 					}
+					
+					if(pTMXTileProperties.containsTMXProperty("civ", "true")){
+						
+					}
 				}
 			});
 			this.mTMXTiledMap = tmxLoader.loadFromAsset("tmx/d6.tmx");
@@ -150,48 +153,6 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		//this.mSmoothChaseCamera.setChaseEntity(player);
 		this.mSmoothChaseCamera.setCenter(camTargetX, camTargetY);
 		player.setVisible(false);
-
-//		final Path path = new Path(5).to(0, 160).to(0, 500).to(600, 500).to(600, 160).to(0, 160);
-//
-//		player.registerEntityModifier(new LoopEntityModifier(new PathModifier(30, path, null, new IPathModifierListener() {
-//			@Override
-//			public void onPathStarted(final PathModifier pPathModifier, final IEntity pEntity) {
-//
-//			}
-//
-//			@Override
-//			public void onPathWaypointStarted(final PathModifier pPathModifier, final IEntity pEntity, final int pWaypointIndex) {
-//				switch(pWaypointIndex) {
-//					case 0:
-//						player.animate(new long[]{200, 200, 200}, 6, 8, true);
-//						break;
-//					case 1:
-//						player.animate(new long[]{200, 200, 200}, 3, 5, true);
-//						break;
-//					case 2:
-//						player.animate(new long[]{200, 200, 200}, 0, 2, true);
-//						break;
-//					case 3:
-//						player.animate(new long[]{200, 200, 200}, 9, 11, true);
-//						break;
-//				}
-//			}
-//
-//			@Override
-//			public void onPathWaypointFinished(final PathModifier pPathModifier, final IEntity pEntity, final int pWaypointIndex) {
-//
-//			}
-//
-//			@Override
-//			public void onPathFinished(final PathModifier pPathModifier, final IEntity pEntity) {
-//
-//			}
-//		})));
-//
-//		/* Now we are going to create a rectangle that will  always highlight the tile below the feet of the pEntity. */
-//		final Rectangle currentTileRectangle = new Rectangle(0, 0, this.mTMXTiledMap.getTileWidth(), this.mTMXTiledMap.getTileHeight(), this.getVertexBufferObjectManager());
-//		currentTileRectangle.setColor(1, 0, 0, 0.25f);
-//		scene.attachChild(currentTileRectangle);
 
 		this.mScene.registerUpdateHandler(new IUpdateHandler() {
 			@Override
