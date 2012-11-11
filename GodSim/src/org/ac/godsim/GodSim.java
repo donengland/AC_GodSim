@@ -2,6 +2,7 @@ package org.ac.godsim;
 
 import org.andengine.engine.camera.BoundCamera;
 import org.andengine.engine.camera.SmoothCamera;
+import org.andengine.engine.camera.hud.HUD;
 import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
@@ -84,6 +85,9 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	private float camTargetY = CAMERA_HEIGHT/2;
 
 	private Scene mScene;
+	
+	// HUD for menu displays
+	private HUD hud;
 
 	// ===========================================================
 	// Constructors
@@ -156,12 +160,28 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		this.mSmoothChaseCamera.setBounds(0, 0, tmxLayer.getHeight(), tmxLayer.getWidth());
 		this.mSmoothChaseCamera.setBoundsEnabled(true);
 		this.mSmoothChaseCamera.setCenter(camTargetX, camTargetY);
+		
+		
+		//====================
+		//  TEMP HUD section
+		//-----
+		hud = new HUD();
+		// Add a circle to the upper left corner of the hud
+		final AnimatedSprite circle;
+		circle = new AnimatedSprite(0, 0, this.mCircleFaceTextureRegion, this.getVertexBufferObjectManager());
+		circle.animate(200, true);
+		this.hud.registerTouchArea(circle);
+		// attach circle to the hud
+		hud.attachChild(circle);
+		// attach hud to main camera
+		this.mSmoothChaseCamera.setHUD(hud);
 
 		// we handle our own scene touches below "onSceneTouchEvent"
 		this.mScene.setOnSceneTouchListener(this);
 
 		// we handle our own scene touches below "onAreaTouchEvent"
 		this.mScene.setOnAreaTouchListener(this);
+		this.hud.setOnAreaTouchListener(this);
 
 		return this.mScene;
 	}
@@ -254,6 +274,12 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	private void removeItem(AnimatedSprite sprite){
 		if(sprite.equals(this.player))
 			System.out.println("Removed Player!!!!");
+		
+		// This area should know the type of sprite before removing,
+		//  but it functions as is written for now.
+		//  At this point, the actual class structure should be built from the Design_Doc -D
+		this.hud.unregisterTouchArea(sprite);
+		this.hud.detachChild(sprite);
 		
 		this.mScene.unregisterTouchArea(sprite);
 		this.mScene.detachChild(sprite);
