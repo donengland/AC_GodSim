@@ -12,7 +12,9 @@ import org.andengine.entity.modifier.PathModifier;
 import org.andengine.entity.modifier.PathModifier.IPathModifierListener;
 import org.andengine.entity.modifier.PathModifier.Path;
 import org.andengine.entity.primitive.Rectangle;
+import org.andengine.entity.scene.IOnAreaTouchListener;
 import org.andengine.entity.scene.IOnSceneTouchListener;
+import org.andengine.entity.scene.ITouchArea;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.util.FPSLogger;
@@ -44,7 +46,7 @@ import android.widget.Toast;
  * @author Don England
  * @since 10-November-2012
  */
-public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListener{
+public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListener, IOnAreaTouchListener{
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -61,15 +63,16 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 
 	private SmoothCamera mSmoothChaseCamera;
 
-	private BitmapTextureAtlas mBitmapTextureAtlas;	
-	private TiledTextureRegion mPlayerTextureRegion;
-	
+	// Atlas, which is combination of several textures below
+	private BitmapTextureAtlas mBitmapTextureAtlas;
+	// TiledTextureRegions store the area of this texture within the atlas ^^
+	private TiledTextureRegion mPlayerTextureRegion;	
 	private TiledTextureRegion mBoxFaceTextureRegion;
 	private TiledTextureRegion mCircleFaceTextureRegion;
 	private TiledTextureRegion mCivTextureRegion;
 	
+	// Storage for the tmx file, including the standard tile size
 	private TMXTiledMap mTMXTiledMap;
-	protected int mWallCount;
 	private int tileWidth = 32;
 	
 	private AnimatedSprite player;
@@ -107,6 +110,8 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	public void onCreateResources() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 
+		// MATH Critical Area of code:  this section is performing atlasing
+		//    "manually",  care must be taken when selecting image and atlas sizes 
 		this.mBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 128, 128, TextureOptions.DEFAULT);
 		this.mBoxFaceTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "face_box_tiled.png", 0, 0, 2, 1); // 64x32
 		this.mCircleFaceTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "face_circle_tiled.png", 0, 32, 2, 1); // 64x32
@@ -125,39 +130,25 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 			final TMXLoader tmxLoader = new TMXLoader(this.getAssets(), this.mEngine.getTextureManager(), TextureOptions.BILINEAR_PREMULTIPLYALPHA, this.getVertexBufferObjectManager(), new ITMXTilePropertiesListener() {
 				@Override
 				public void onTMXTileWithPropertiesCreated(final TMXTiledMap pTMXTiledMap, final TMXLayer pTMXLayer, final TMXTile pTMXTile, final TMXProperties<TMXTileProperty> pTMXTileProperties) {
+					// area for tile properties actions, those properties that are set in the tiles themselves
 					if(pTMXTileProperties.containsTMXProperty("wall", "true")) {
-						GodSim.this.mWallCount++;
-					}					
-					if(pTMXTileProperties.containsTMXProperty("civ", "true")){						
-					}
-					if(pTMXTileProperties.containsTMXProperty("Face", "true")){
+						// expand to add physical barriers, "as a stretch goal"
 					}
 				}
 			});
 			this.mTMXTiledMap = tmxLoader.loadFromAsset("tmx/World1.tmx");
-
-			this.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					Toast.makeText(GodSim.this, "Wall count in this TMXTiledMap: " + GodSim.this.mWallCount, Toast.LENGTH_LONG).show();
-				}
-			});
 		} catch (final TMXLoadException e) {
 			Debug.e(e);
 		}
+		// Look into tmx and find all layers, perform action--attach child--on non-resource layer
 		TMXLayer tmxLayer = null;
 		for (int i = 0; i < this.mTMXTiledMap.getTMXLayers().size(); i++){
             tmxLayer = this.mTMXTiledMap.getTMXLayers().get(i);
             if (!tmxLayer.getTMXLayerProperties().containsTMXProperty("resource", "true"))
             	this.mScene.attachChild(tmxLayer);
 		}
-//		for(TMXLayer tmxLayer : this.mTMXTiledMap.getTMXLayers()) {
-//			  this.mScene.getChild(1).attachChild(tmxLayer);
-//		}
-//		final TMXLayer tmxLayer = this.mTMXTiledMap.getTMXLayers().get(0);
-//		System.out.println("tmx");
-//		this.mScene.attachChild(tmxLayer);
 		
+		// Send this map out for processing resources and civilizations
 		this.createResourceObjects(mTMXTiledMap);
 		this.createCivilizationObjects(mTMXTiledMap);
 
@@ -166,7 +157,11 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		this.mSmoothChaseCamera.setBoundsEnabled(true);
 		this.mSmoothChaseCamera.setCenter(camTargetX, camTargetY);
 
+		// we handle our own scene touches below "onSceneTouchEvent"
 		this.mScene.setOnSceneTouchListener(this);
+
+		// we handle our own scene touches below "onAreaTouchEvent"
+		this.mScene.setOnAreaTouchListener(this);
 
 		return this.mScene;
 	}
@@ -178,7 +173,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	private void createCivilizationObjects(TMXTiledMap tmxmap){
 		for(final TMXObjectGroup group: this.mTMXTiledMap.getTMXObjectGroups()) {
             if(group.getTMXObjectGroupProperties().containsTMXProperty("civ", "true")){
-            	// This is our "wall" layer. Create the boxes from it
+            	// This is our "civ" layer. Create the civilizations from it
                 for(final TMXObject object : group.getTMXObjects()) {
                 	addCiv(object.getX(), object.getY());
                 }
@@ -189,7 +184,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	private void createResourceObjects(TMXTiledMap tmxmap){
 		for(final TMXObjectGroup group: this.mTMXTiledMap.getTMXObjectGroups()) {
             if(group.getTMXObjectGroupProperties().containsTMXProperty("resource", "true")){
-            	// This is our "wall" layer. Create the boxes from it
+            	// This is our "resource" layer. Create the resources from it
                 for(final TMXObject object : group.getTMXObjects()) {
                 	addResource(object.getX(), object.getY());
                 }
@@ -197,6 +192,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		}
 	}
 	
+	// Add the Resource visuals and register/attach them to the scene.	
 	private void addResource(final float pX, final float pY) {
 		final AnimatedSprite resource;
 		resource = new AnimatedSprite(pX, pY, this.mBoxFaceTextureRegion, this.getVertexBufferObjectManager());
@@ -206,6 +202,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		this.mScene.attachChild(resource);
 	}
 	
+	// Add the Civilization visuals and register/attach them to the scene.
 	private void addCiv(final float pX, final float pY) {
 		final AnimatedSprite civ;
 		civ = new AnimatedSprite(pX, pY, this.mCivTextureRegion, this.getVertexBufferObjectManager());
@@ -215,6 +212,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		this.mScene.attachChild(civ);
 	}
 
+	// The games main touch handler, there is also an area touch handler
 	public boolean onSceneTouchEvent(final Scene pScene, final TouchEvent pSceneTouchEvent) {
 		if(pSceneTouchEvent.isActionDown()) {
 			this.touchStart(pSceneTouchEvent.getMotionEvent().getX(), pSceneTouchEvent.getMotionEvent().getY());
@@ -224,17 +222,41 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 			this.moveCamera(pSceneTouchEvent.getMotionEvent().getX(), pSceneTouchEvent.getMotionEvent().getY());
 			return true;
 		}if(pSceneTouchEvent.isActionUp()) {
-			// Enable for adding "resources" at mouse location on release 
+			// Remove comment below to add "resources" at mouse location on release 
 			//this.addResource(pSceneTouchEvent.getX(), pSceneTouchEvent.getY());
 			return true;
 		}
+		// let the handler know if we did not handle a specific message
 		return false;
 	}
+	
+	// The games "unit" touch handler, there is also an scene/world touch handler
+	public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final ITouchArea pTouchArea, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
+		System.out.println("Inside onAreaTouched!");
+		if(pSceneTouchEvent.isActionDown()) {
+			this.removeItem((AnimatedSprite)pTouchArea);
+			return true;
+		}
+		// let the handler know if we did not handle an area event
+		return false;
+	}
+	
+	// removes the touched sprite, placeholder for handling menu on sprites
+	private void removeItem(AnimatedSprite sprite){
+		this.mScene.unregisterTouchArea(sprite);
+		this.mScene.detachChild(sprite);
+		
+		System.gc();
+	}
+	
+	// Grab the starting location for any movement
 	private void touchStart(final float pX, final float pY){
 		System.out.println("Touched (x):" + pX + "(y):" +pY);
 		this.camTempX = pX;
 		this.camTempY = pY;
 	}
+	
+	// Preform relative movement from starting location
 	private void moveCamera(final float pX, final float pY){
 		System.out.println("Moved (x):" + pX + "(y):" +pY);
 
