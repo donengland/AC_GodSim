@@ -75,7 +75,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	private TMXTiledMap mTMXTiledMap;
 	private int tileWidth = 32;
 	
-	private AnimatedSprite player;
+	private AnimatedSprite player = null;
 	
 	// store touch location for X and Y in touch handlers
 	private float camTempX;
@@ -204,12 +204,22 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	
 	// Add the Civilization visuals and register/attach them to the scene.
 	private void addCiv(final float pX, final float pY) {
-		final AnimatedSprite civ;
-		civ = new AnimatedSprite(pX, pY, this.mCivTextureRegion, this.getVertexBufferObjectManager());
-		civ.animate(1000, true);
-
-		this.mScene.registerTouchArea(civ);
-		this.mScene.attachChild(civ);
+		if(this.player == null){
+			player = new AnimatedSprite(pX, pY, this.mCivTextureRegion, this.getVertexBufferObjectManager());
+			player.animate(1000, true);
+	
+			this.mScene.registerTouchArea(player);
+			this.mScene.attachChild(player);
+			
+		}
+		else{
+			final AnimatedSprite civ;
+			civ = new AnimatedSprite(pX, pY, this.mCivTextureRegion, this.getVertexBufferObjectManager());
+			civ.animate(1000, true);
+	
+			this.mScene.registerTouchArea(civ);
+			this.mScene.attachChild(civ);
+		}
 	}
 
 	// The games main touch handler, there is also an area touch handler
@@ -232,7 +242,6 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	
 	// The games "unit" touch handler, there is also an scene/world touch handler
 	public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final ITouchArea pTouchArea, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
-		System.out.println("Inside onAreaTouched!");
 		if(pSceneTouchEvent.isActionDown()) {
 			this.removeItem((AnimatedSprite)pTouchArea);
 			return true;
@@ -243,6 +252,9 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	
 	// removes the touched sprite, placeholder for handling menu on sprites
 	private void removeItem(AnimatedSprite sprite){
+		if(sprite.equals(this.player))
+			System.out.println("Removed Player!!!!");
+		
 		this.mScene.unregisterTouchArea(sprite);
 		this.mScene.detachChild(sprite);
 		
@@ -256,7 +268,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		this.camTempY = pY;
 	}
 	
-	// Preform relative movement from starting location
+	// Perform relative movement from starting location
 	private void moveCamera(final float pX, final float pY){
 		System.out.println("Moved (x):" + pX + "(y):" +pY);
 
@@ -285,4 +297,3 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	// Inner and Anonymous Classes
 	// ===========================================================
 }
-
