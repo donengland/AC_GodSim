@@ -19,6 +19,8 @@ import org.andengine.entity.util.FPSLogger;
 import org.andengine.extension.tmx.TMXLayer;
 import org.andengine.extension.tmx.TMXLoader;
 import org.andengine.extension.tmx.TMXLoader.ITMXTilePropertiesListener;
+import org.andengine.extension.tmx.TMXObject;
+import org.andengine.extension.tmx.TMXObjectGroup;
 import org.andengine.extension.tmx.TMXProperties;
 import org.andengine.extension.tmx.TMXTile;
 import org.andengine.extension.tmx.TMXTileProperty;
@@ -123,14 +125,10 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 				public void onTMXTileWithPropertiesCreated(final TMXTiledMap pTMXTiledMap, final TMXLayer pTMXLayer, final TMXTile pTMXTile, final TMXProperties<TMXTileProperty> pTMXTileProperties) {
 					if(pTMXTileProperties.containsTMXProperty("wall", "true")) {
 						GodSim.this.mWallCount++;
-					}
-					
-					if(pTMXTileProperties.containsTMXProperty("civ", "true")){
-						
+					}					
+					if(pTMXTileProperties.containsTMXProperty("civ", "true")){						
 					}
 					if(pTMXTileProperties.containsTMXProperty("Face", "true")){
-						System.out.println("Face at (x):" + pTMXTile.getTileColumn()*tileWidth + " (y):" + pTMXTile.getTileRow()*tileWidth);
-						addFace(pTMXTile.getTileColumn()*tileWidth, pTMXTile.getTileRow()*tileWidth);
 					}
 				}
 			});
@@ -145,9 +143,20 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		} catch (final TMXLoadException e) {
 			Debug.e(e);
 		}
-
-		final TMXLayer tmxLayer = this.mTMXTiledMap.getTMXLayers().get(0);
-		this.mScene.attachChild(tmxLayer);
+		TMXLayer tmxLayer = null;
+		for (int i = 0; i < this.mTMXTiledMap.getTMXLayers().size(); i++){
+            tmxLayer = this.mTMXTiledMap.getTMXLayers().get(i);
+            if (!tmxLayer.getTMXLayerProperties().containsTMXProperty("resource", "true"))
+            	this.mScene.attachChild(tmxLayer);
+		}
+//		for(TMXLayer tmxLayer : this.mTMXTiledMap.getTMXLayers()) {
+//			  this.mScene.getChild(1).attachChild(tmxLayer);
+//		}
+//		final TMXLayer tmxLayer = this.mTMXTiledMap.getTMXLayers().get(0);
+//		System.out.println("tmx");
+//		this.mScene.attachChild(tmxLayer);
+		
+		this.createResourceObjects(mTMXTiledMap);
 
 		/* Make the camera not exceed the bounds of the TMXEntity. */
 		this.mSmoothChaseCamera.setBounds(0, 0, tmxLayer.getHeight(), tmxLayer.getWidth());
@@ -163,7 +172,18 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	// Methods
 	// ===========================================================
 
-	private void addFace(final float pX, final float pY) {
+	private void createResourceObjects(TMXTiledMap tmxmap){
+		for(final TMXObjectGroup group: this.mTMXTiledMap.getTMXObjectGroups()) {
+            if(group.getTMXObjectGroupProperties().containsTMXProperty("resource", "true")){
+            	// This is our "wall" layer. Create the boxes from it
+                for(final TMXObject object : group.getTMXObjects()) {
+                	addResource(object.getX(), object.getY());
+                }
+        }
+    }
+	}
+	
+	private void addResource(final float pX, final float pY) {
 		final AnimatedSprite face;
 		face = new AnimatedSprite(pX, pY, this.mBoxFaceTextureRegion, this.getVertexBufferObjectManager());
 		face.animate(200, true);
@@ -181,7 +201,8 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 			this.moveCamera(pSceneTouchEvent.getMotionEvent().getX(), pSceneTouchEvent.getMotionEvent().getY());
 			return true;
 		}if(pSceneTouchEvent.isActionUp()) {
-			this.addFace(pSceneTouchEvent.getX(), pSceneTouchEvent.getY());
+			// Enable for adding "resources" at mouse location on release 
+			//this.addResource(pSceneTouchEvent.getX(), pSceneTouchEvent.getY());
 			return true;
 		}
 		return false;

@@ -8,76 +8,29 @@
    H4sIAAAAAAAAC82XSU/DMBCFDZyAE9uBrXVboAWkNv//12FELI3M2LN53B4+KYuSeX5vbCeLEMIusaigvSdhYl7joNH00Wkc2ho1zVoPrHjminmBefOYeBLyPNCXVWItZDMww576ovA6dQ/qe0t8zazB8fsg/2q9vipqLufzZcPfDfHOzLaDRkrfJ/Ay823wicqTq2/PeHZSeMQBrkfZH40n1H5xcNDulZk0V4qcG7b2W2tRvuZ54r2fj/he8O4BbAwRya98fqocS3PjzhHpN9Cxvpk01PrIsn5g62uZIXXdczxniauZiyP52+IS6Ls21tfsYdQzLX3leLV9ZNl7Lf71XFd/++wc4RXRFzvWhbTeC32qYe0/2AdSb0fq0/QD1HefuE08GPVtAz5nNPOhnAc7xNNSX2SMW+IRV99L+D83vPOVrHNe/WfZZ2/CX8+1uHPW4vGPVCM29Jb3vDQfFPUwrPuMpr6lJlVP+u5T+T/F9HP7o3fvazLVcGreW30e8S/MzUaT4Q860U6+ABkAAA==
   </data>
  </layer>
- <objectgroup name="Objects" width="40" height="40">
-  <object name="Face" x="640" y="448" width="32" height="32">
-   <properties>
-    <property name="face" value="true"/>
-   </properties>
-  </object>
-  <object name="face" x="320" y="576" width="32" height="32">
-   <properties>
-    <property name="face" value="true"/>
-   </properties>
-  </object>
-  <object name="Face" x="800" y="928" width="32" height="32">
-   <properties>
-    <property name="face" value="true"/>
-   </properties>
-  </object>
-  <object name="Face" x="1152" y="416" width="32" height="32">
-   <properties>
-    <property name="face" value="true"/>
-   </properties>
-  </object>
-  <object name="Face" x="224" y="1088" width="32" height="32">
-   <properties>
-    <property name="face" value="true"/>
-   </properties>
-  </object>
-  <object name="wall" x="205" y="141" width="7" height="232">
-   <properties>
-    <property name="wall" value="true"/>
-   </properties>
-  </object>
-  <object name="wall" x="214" y="142" width="413" height="6">
-   <properties>
-    <property name="wall" value="true"/>
-   </properties>
-  </object>
-  <object name="wall" x="271" y="238" width="79" height="5">
-   <properties>
-    <property name="wall" value="true"/>
-   </properties>
-  </object>
-  <object name="wall" x="385" y="238" width="79" height="5">
-   <properties>
-    <property name="wall" value="true"/>
-   </properties>
-  </object>
-  <object name="wall" x="463" y="304" width="165" height="4">
-   <properties>
-    <property name="wall" value="true"/>
-   </properties>
-  </object>
-  <object name="wall" x="272" y="246" width="5" height="124">
-   <properties>
-    <property name="wall" value="true"/>
-   </properties>
-  </object>
-  <object name="wall" x="215" y="367" width="55" height="4">
-   <properties>
-    <property name="wall" value="true"/>
-   </properties>
-  </object>
-  <object name="wall" x="622" y="151" width="6" height="150">
-   <properties>
-    <property name="wall" value="true"/>
-   </properties>
-  </object>
-  <object name="wall" x="462" y="245" width="6" height="56">
-   <properties>
-    <property name="wall" value="true"/>
-   </properties>
-  </object>
+ <objectgroup name="Walls" width="40" height="40">
+  <properties>
+   <property name="type" value="wall"/>
+  </properties>
+  <object x="205" y="139" width="424" height="10"/>
+  <object x="621" y="152" width="8" height="157"/>
+  <object x="462" y="299" width="160" height="8"/>
+  <object x="460" y="235" width="9" height="61"/>
+  <object x="383" y="235" width="76" height="9"/>
+  <object x="270" y="237" width="81" height="8"/>
+  <object x="205" y="151" width="6" height="222"/>
+  <object x="212" y="364" width="64" height="9"/>
+  <object x="270" y="247" width="6" height="116"/>
+ </objectgroup>
+ <objectgroup name="Resources" width="40" height="40">
+  <properties>
+   <property name="resource" value="true"/>
+  </properties>
+  <object x="704" y="416" width="32" height="32"/>
+  <object x="704" y="416" width="32" height="32"/>
+  <object x="544" y="608" width="32" height="32"/>
+  <object x="905" y="569" width="32" height="32"/>
+  <object x="1173" y="868" width="32" height="32"/>
+  <object x="508" y="199" width="32" height="32"/>
  </objectgroup>
 </map>
