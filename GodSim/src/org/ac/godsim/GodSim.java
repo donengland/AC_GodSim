@@ -66,6 +66,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	
 	private TiledTextureRegion mBoxFaceTextureRegion;
 	private TiledTextureRegion mCircleFaceTextureRegion;
+	private TiledTextureRegion mCivTextureRegion;
 	
 	private TMXTiledMap mTMXTiledMap;
 	protected int mWallCount;
@@ -76,8 +77,8 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	// store touch location for X and Y in touch handlers
 	private float camTempX;
 	private float camTempY;
-	private float camTargetX = CAMERA_WIDTH;
-	private float camTargetY = CAMERA_HEIGHT;
+	private float camTargetX = CAMERA_WIDTH/2;
+	private float camTargetY = CAMERA_HEIGHT/2;
 
 	private Scene mScene;
 
@@ -106,9 +107,10 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	public void onCreateResources() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 
-		this.mBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 64, 64, TextureOptions.DEFAULT);
+		this.mBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 128, 128, TextureOptions.DEFAULT);
 		this.mBoxFaceTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "face_box_tiled.png", 0, 0, 2, 1); // 64x32
 		this.mCircleFaceTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "face_circle_tiled.png", 0, 32, 2, 1); // 64x32
+		this.mCivTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "civ_tiled.png", 0, 64, 2, 1); // 128x64		
 
 		this.mBitmapTextureAtlas.load();
 	}
@@ -157,6 +159,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 //		this.mScene.attachChild(tmxLayer);
 		
 		this.createResourceObjects(mTMXTiledMap);
+		this.createCivilizationObjects(mTMXTiledMap);
 
 		/* Make the camera not exceed the bounds of the TMXEntity. */
 		this.mSmoothChaseCamera.setBounds(0, 0, tmxLayer.getHeight(), tmxLayer.getWidth());
@@ -172,6 +175,17 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	// Methods
 	// ===========================================================
 
+	private void createCivilizationObjects(TMXTiledMap tmxmap){
+		for(final TMXObjectGroup group: this.mTMXTiledMap.getTMXObjectGroups()) {
+            if(group.getTMXObjectGroupProperties().containsTMXProperty("civ", "true")){
+            	// This is our "wall" layer. Create the boxes from it
+                for(final TMXObject object : group.getTMXObjects()) {
+                	addCiv(object.getX(), object.getY());
+                }
+            }
+		}
+	}
+	
 	private void createResourceObjects(TMXTiledMap tmxmap){
 		for(final TMXObjectGroup group: this.mTMXTiledMap.getTMXObjectGroups()) {
             if(group.getTMXObjectGroupProperties().containsTMXProperty("resource", "true")){
@@ -179,17 +193,26 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
                 for(final TMXObject object : group.getTMXObjects()) {
                 	addResource(object.getX(), object.getY());
                 }
-        }
-    }
+            }
+		}
 	}
 	
 	private void addResource(final float pX, final float pY) {
-		final AnimatedSprite face;
-		face = new AnimatedSprite(pX, pY, this.mBoxFaceTextureRegion, this.getVertexBufferObjectManager());
-		face.animate(200, true);
+		final AnimatedSprite resource;
+		resource = new AnimatedSprite(pX, pY, this.mBoxFaceTextureRegion, this.getVertexBufferObjectManager());
+		resource.animate(200, true);
 
-		this.mScene.registerTouchArea(face);
-		this.mScene.attachChild(face);
+		this.mScene.registerTouchArea(resource);
+		this.mScene.attachChild(resource);
+	}
+	
+	private void addCiv(final float pX, final float pY) {
+		final AnimatedSprite civ;
+		civ = new AnimatedSprite(pX, pY, this.mCivTextureRegion, this.getVertexBufferObjectManager());
+		civ.animate(1000, true);
+
+		this.mScene.registerTouchArea(civ);
+		this.mScene.attachChild(civ);
 	}
 
 	public boolean onSceneTouchEvent(final Scene pScene, final TouchEvent pSceneTouchEvent) {
