@@ -35,16 +35,19 @@ public class Civilization extends Entity {
         }
 	}
 	
-	public void addGatherer(Unit thisUnit){
+	public void addUnit(Unit thisUnit){
 		this.myUnits.add(thisUnit);
 	}
-	public void addScholar(Unit thisUnit){	
-		this.myUnits.add(thisUnit);
-	}
-	public void addWarrior(Unit thisUnit){	
-		this.myUnits.add(thisUnit);
-	}
-	public void addCiv(Unit thisUnit){	
-		this.myUnits.add(thisUnit);
-	}
+//	public void addGatherer(Unit thisUnit){
+//		this.myUnits.add(thisUnit);
+//	}
+//	public void addScholar(Unit thisUnit){	
+//		this.myUnits.add(thisUnit);
+//	}
+//	public void addWarrior(Unit thisUnit){	
+//		this.myUnits.add(thisUnit);
+//	}
+//	public void addCiv(Unit thisUnit){	
+//		this.myUnits.add(thisUnit);
+//	}
 }

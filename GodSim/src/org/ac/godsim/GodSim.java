@@ -24,6 +24,10 @@ import org.andengine.entity.scene.ITouchArea;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.util.FPSLogger;
+import org.andengine.extension.physics.box2d.PhysicsConnector;
+import org.andengine.extension.physics.box2d.PhysicsFactory;
+import org.andengine.extension.physics.box2d.PhysicsWorld;
+import org.andengine.extension.physics.box2d.util.Vector2Pool;
 import org.andengine.extension.tmx.TMXLayer;
 import org.andengine.extension.tmx.TMXLoader;
 import org.andengine.extension.tmx.TMXLoader.ITMXTilePropertiesListener;
@@ -34,16 +38,24 @@ import org.andengine.extension.tmx.TMXTile;
 import org.andengine.extension.tmx.TMXTileProperty;
 import org.andengine.extension.tmx.TMXTiledMap;
 import org.andengine.extension.tmx.util.exception.TMXLoadException;
+import org.andengine.input.sensor.acceleration.AccelerationData;
 import org.andengine.input.sensor.acceleration.IAccelerationListener;
 import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
+import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.Constants;
 import org.andengine.util.debug.Debug;
 
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+
+import android.hardware.SensorManager;
 import android.widget.Toast;
 
 /**
@@ -52,7 +64,7 @@ import android.widget.Toast;
  * @author Don England
  * @since 10-November-2012
  */
-public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListener, IOnAreaTouchListener{
+public class GodSim extends SimpleBaseGameActivity implements IAccelerationListener, IOnSceneTouchListener, IOnAreaTouchListener{
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -62,6 +74,9 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	private static final int CAMERA_X_VELOCITY = 500;
 	private static final int CAMERA_Y_VELOCITY = 500;
 	private static final int CAMERA_ZOOM_FACTOR = 500;
+	
+	// PHYSICS
+	private static final FixtureDef FIXTURE_DEF = PhysicsFactory.createFixtureDef(1, 0.5f, 0.5f);
 
 	// ===========================================================
 	// Fields
@@ -94,6 +109,9 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	
 	// Temp Civilization
 	private Civilization myCiv;
+	
+	// PHYSICS
+	private PhysicsWorld mPhysicsWorld;
 
 	// ===========================================================
 	// Constructors
@@ -189,6 +207,28 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		this.mScene.setOnAreaTouchListener(this);
 		this.hud.setOnAreaTouchListener(this);
 		
+		// PHYSICS
+		this.mPhysicsWorld = new PhysicsWorld(new Vector2(0, SensorManager.GRAVITY_EARTH), false);
+
+		final VertexBufferObjectManager vertexBufferObjectManager = this.getVertexBufferObjectManager();
+		final Rectangle ground = new Rectangle(0, tmxLayer.getHeight() - 2, tmxLayer.getWidth(), 2, vertexBufferObjectManager);
+		final Rectangle roof = new Rectangle(0, 0, tmxLayer.getWidth(), 2, vertexBufferObjectManager);
+		final Rectangle left = new Rectangle(0, 0, 2, tmxLayer.getHeight(), vertexBufferObjectManager);
+		final Rectangle right = new Rectangle(tmxLayer.getWidth() - 2, 0, 2, tmxLayer.getHeight(), vertexBufferObjectManager);
+
+		final FixtureDef wallFixtureDef = PhysicsFactory.createFixtureDef(0, 0.5f, 0.5f);
+		PhysicsFactory.createBoxBody(this.mPhysicsWorld, ground, BodyType.StaticBody, wallFixtureDef);
+		PhysicsFactory.createBoxBody(this.mPhysicsWorld, roof, BodyType.StaticBody, wallFixtureDef);
+		PhysicsFactory.createBoxBody(this.mPhysicsWorld, left, BodyType.StaticBody, wallFixtureDef);
+		PhysicsFactory.createBoxBody(this.mPhysicsWorld, right, BodyType.StaticBody, wallFixtureDef);
+
+		this.mScene.attachChild(ground);
+		this.mScene.attachChild(roof);
+		this.mScene.attachChild(left);
+		this.mScene.attachChild(right);
+
+		this.mScene.registerUpdateHandler(this.mPhysicsWorld);
+		
 		return this.mScene;
 	}
 
@@ -237,6 +277,20 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		this.mScene.registerTouchArea(civ);
 		this.mScene.attachChild(civ);
 	}
+	
+	// PHYSICS TESTING
+	private void addFace(final float pX, final float pY) {
+		final AnimatedSprite face;
+		final Body body;
+		face = new AnimatedSprite(pX, pY, this.mWarriorTextureRegion, this.getVertexBufferObjectManager());
+		body = PhysicsFactory.createBoxBody(this.mPhysicsWorld, face, BodyType.DynamicBody, FIXTURE_DEF);
+		face.setUserData("physics");
+		face.animate(200);
+
+		//this.mScene.registerTouchArea(face);
+		this.mScene.attachChild(face);
+		this.mPhysicsWorld.registerPhysicsConnector(new PhysicsConnector(face, body, true, true));
+	}
 
 	// The games main touch handler, there is also an area touch handler
 	public boolean onSceneTouchEvent(final Scene pScene, final TouchEvent pSceneTouchEvent) {
@@ -249,7 +303,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 			return true;
 		}if(pSceneTouchEvent.isActionUp()) {
 			// Remove comment below to add "resources" at mouse location on release 
-			//this.addResource(pSceneTouchEvent.getX(), pSceneTouchEvent.getY());
+			this.addFace(pSceneTouchEvent.getX(), pSceneTouchEvent.getY());
 			return true;
 		}
 		// let the handler know if we did not handle a specific message
@@ -258,6 +312,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	
 	// The games "unit" touch handler, there is also an scene/world touch handler
 	public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final ITouchArea pTouchArea, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
+		System.out.println("In \"onAreaTouched\"");
 		if(pSceneTouchEvent.isActionDown()) {
 			this.removeItem((Unit)pTouchArea);
 			return true;
@@ -273,12 +328,21 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		// This area should know the type of sprite before removing,
 		//  but it functions as is written for now.
 		//  At this point, the actual class structure should be built from the Design_Doc -D
-		this.hud.unregisterTouchArea(unit);
-		this.hud.detachChild(unit);
-		
-		this.mScene.unregisterTouchArea(unit);
-		this.mScene.detachChild(unit);
-		
+		if(unit.getUserData() == "physics"){
+			final PhysicsConnector facePhysicsConnector = this.mPhysicsWorld.getPhysicsConnectorManager().findPhysicsConnectorByShape(unit);
+
+			this.mPhysicsWorld.unregisterPhysicsConnector(facePhysicsConnector);
+			this.mPhysicsWorld.destroyBody(facePhysicsConnector.getBody());
+			
+			this.mScene.unregisterTouchArea(unit);
+			this.mScene.detachChild(unit);
+		}else{		
+			this.hud.unregisterTouchArea(unit);
+			this.hud.detachChild(unit);
+			
+			this.mScene.unregisterTouchArea(unit);
+			this.mScene.detachChild(unit);
+		}		
 		System.gc();
 	}
 	
@@ -314,6 +378,33 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		// update camera to move to new target position
 		this.mSmoothChaseCamera.setCenter(camTargetX, camTargetY);
 	}
+	
+	@Override
+	public void onAccelerationAccuracyChanged(final AccelerationData pAccelerationData) {
+
+	}
+
+	@Override
+	public void onAccelerationChanged(final AccelerationData pAccelerationData) {
+		final Vector2 gravity = Vector2Pool.obtain(pAccelerationData.getX(), pAccelerationData.getY());
+		this.mPhysicsWorld.setGravity(gravity);
+		Vector2Pool.recycle(gravity);
+	}
+
+	@Override
+	public void onResumeGame() {
+		super.onResumeGame();
+
+		this.enableAccelerationSensor(this);
+	}
+
+	@Override
+	public void onPauseGame() {
+		super.onPauseGame();
+
+		this.disableAccelerationSensor();
+	}
+
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
