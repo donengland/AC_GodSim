@@ -9,6 +9,7 @@ import org.ac.godsim.civ.units.Gatherer;
 import org.ac.godsim.civ.units.Scholar;
 import org.ac.godsim.civ.units.Unit;
 import org.ac.godsim.civ.units.Warrior;
+import org.ac.godsim.utils.constants.GodSimConstants;
 import org.andengine.entity.Entity;
 import org.andengine.entity.scene.Scene;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
@@ -20,11 +21,14 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
  * @author Don England
  * @since 11-November-2012
  */
-public class Civilization extends Entity {
+public class Civilization extends Entity implements GodSimConstants{
 
 	private final List<Unit> myUnits = new LinkedList<Unit>();
 	
-	public Civilization(){
+	private UNIT_COLOR myColor;
+	
+	public Civilization(UNIT_COLOR color){
+		myColor = color;
 	}
 	
 	public void updateUnits(){
@@ -33,6 +37,10 @@ public class Civilization extends Entity {
             //Unit currentUnit = (Unit) iter.next();
             //currentUnit.update();
         }
+	}
+	
+	public UNIT_COLOR getTeamColor(){
+		return myColor;
 	}
 	
 	public void addGatherer(Unit thisUnit){
