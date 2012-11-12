@@ -1,5 +1,9 @@
 package org.ac.godsim;
 
+import org.ac.godsim.civ.units.Civ;
+import org.ac.godsim.civ.units.Gatherer;
+import org.ac.godsim.civ.units.Scholar;
+import org.ac.godsim.civ.units.Unit;
 import org.andengine.engine.camera.BoundCamera;
 import org.andengine.engine.camera.SmoothCamera;
 import org.andengine.engine.camera.hud.HUD;
@@ -75,8 +79,6 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	// Storage for the tmx file, including the standard tile size
 	private TMXTiledMap mTMXTiledMap;
 	private int tileWidth = 32;
-	
-	private AnimatedSprite player = null;
 	
 	// store touch location for X and Y in touch handlers
 	private float camTempX;
@@ -167,8 +169,8 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		//-----
 		hud = new HUD();
 		// Add a circle to the upper left corner of the hud
-		final AnimatedSprite circle;
-		circle = new AnimatedSprite(0, 0, this.mCircleFaceTextureRegion, this.getVertexBufferObjectManager());
+		final Unit circle;
+		circle = new Unit(new Scholar(), 0, 0, this.mCircleFaceTextureRegion, this.getVertexBufferObjectManager());
 		circle.animate(200, true);
 		this.hud.registerTouchArea(circle);
 		// attach circle to the hud
@@ -214,8 +216,8 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	
 	// Add the Resource visuals and register/attach them to the scene.	
 	private void addResource(final float pX, final float pY) {
-		final AnimatedSprite resource;
-		resource = new AnimatedSprite(pX, pY, this.mBoxFaceTextureRegion, this.getVertexBufferObjectManager());
+		final Unit resource;
+		resource = new Unit(new Gatherer(), pX, pY, this.mBoxFaceTextureRegion, this.getVertexBufferObjectManager());
 		resource.animate(200, true);
 
 		this.mScene.registerTouchArea(resource);
@@ -224,22 +226,12 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	
 	// Add the Civilization visuals and register/attach them to the scene.
 	private void addCiv(final float pX, final float pY) {
-		if(this.player == null){
-			player = new AnimatedSprite(pX, pY, this.mCivTextureRegion, this.getVertexBufferObjectManager());
-			player.animate(1000, true);
-	
-			this.mScene.registerTouchArea(player);
-			this.mScene.attachChild(player);
-			
-		}
-		else{
-			final AnimatedSprite civ;
-			civ = new AnimatedSprite(pX, pY, this.mCivTextureRegion, this.getVertexBufferObjectManager());
-			civ.animate(1000, true);
-	
-			this.mScene.registerTouchArea(civ);
-			this.mScene.attachChild(civ);
-		}
+		final Unit civ;
+		civ = new Unit(new Civ(), pX, pY, this.mCivTextureRegion, this.getVertexBufferObjectManager());
+		civ.animate(1000, true);
+
+		this.mScene.registerTouchArea(civ);
+		this.mScene.attachChild(civ);
 	}
 
 	// The games main touch handler, there is also an area touch handler
@@ -263,7 +255,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	// The games "unit" touch handler, there is also an scene/world touch handler
 	public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final ITouchArea pTouchArea, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
 		if(pSceneTouchEvent.isActionDown()) {
-			this.removeItem((AnimatedSprite)pTouchArea);
+			this.removeItem((Unit)pTouchArea);
 			return true;
 		}
 		// let the handler know if we did not handle an area event
@@ -271,9 +263,8 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	}
 	
 	// removes the touched sprite, placeholder for handling menu on sprites
-	private void removeItem(AnimatedSprite sprite){
-		if(sprite.equals(this.player))
-			System.out.println("Removed Player!!!!");
+	private void removeItem(Unit sprite){
+		System.out.println("Removed " + sprite.performGetType() +"!!!!");
 		
 		// This area should know the type of sprite before removing,
 		//  but it functions as is written for now.
@@ -296,7 +287,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	
 	// Perform relative movement from starting location
 	private void moveCamera(final float pX, final float pY){
-		System.out.println("Moved (x):" + pX + "(y):" +pY);
+		//System.out.println("Moved (x):" + pX + "(y):" +pY);
 
 		// Move Camera target opposite from touch direction, and reset static position
 		camTargetX += camTempX - pX;
