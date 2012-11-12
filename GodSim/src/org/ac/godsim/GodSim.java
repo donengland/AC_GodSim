@@ -1,5 +1,6 @@
 package org.ac.godsim;
 
+import org.ac.godsim.civ.Civilization;
 import org.ac.godsim.civ.units.Civ;
 import org.ac.godsim.civ.units.Gatherer;
 import org.ac.godsim.civ.units.Scholar;
@@ -71,10 +72,10 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	// Atlas, which is combination of several textures below
 	private BitmapTextureAtlas mBitmapTextureAtlas;
 	// TiledTextureRegions store the area of this texture within the atlas ^^
-	private TiledTextureRegion mPlayerTextureRegion;	
-	private TiledTextureRegion mBoxFaceTextureRegion;
-	private TiledTextureRegion mCircleFaceTextureRegion;
-	private TiledTextureRegion mCivTextureRegion;
+	private TiledTextureRegion mScholarTextureRegion;	
+	private TiledTextureRegion mWarriorTextureRegion;
+	private TiledTextureRegion mGathererTextureRegion;
+	private TiledTextureRegion mCivilizationTextureRegion;
 	
 	// Storage for the tmx file, including the standard tile size
 	private TMXTiledMap mTMXTiledMap;
@@ -90,6 +91,9 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	
 	// HUD for menu displays
 	private HUD hud;
+	
+	// Temp Civilization
+	private Civilization myCiv;
 
 	// ===========================================================
 	// Constructors
@@ -119,11 +123,12 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		// MATH Critical Area of code:  this section is performing atlasing
 		//    "manually",  care must be taken when selecting image and atlas sizes 
 		this.mBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 128, 128, TextureOptions.DEFAULT);
-		this.mBoxFaceTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "face_box_tiled.png", 0, 0, 2, 1); // 64x32
-		this.mCircleFaceTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "face_circle_tiled.png", 0, 32, 2, 1); // 64x32
-		this.mCivTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "civ_tiled.png", 0, 64, 2, 1); // 128x64		
-
+		this.mWarriorTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "face_box_tiled.png", 0, 0, 2, 1); // 64x32
+		this.mGathererTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "face_circle_tiled.png", 0, 32, 2, 1); // 64x32
+		this.mCivilizationTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "civ_tiled.png", 0, 64, 2, 1); // 128x64
 		this.mBitmapTextureAtlas.load();
+		
+		this.mScholarTextureRegion = this.mGathererTextureRegion;
 	}
 
 	@Override
@@ -163,14 +168,13 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		this.mSmoothChaseCamera.setBoundsEnabled(true);
 		this.mSmoothChaseCamera.setCenter(camTargetX, camTargetY);
 		
-		
 		//====================
 		//  TEMP HUD section
 		//-----
 		hud = new HUD();
 		// Add a circle to the upper left corner of the hud
 		final Unit circle;
-		circle = new Unit(new Scholar(), 0, 0, this.mCircleFaceTextureRegion, this.getVertexBufferObjectManager());
+		circle = new Unit(new Scholar(), 0, 0, this.mScholarTextureRegion, this.getVertexBufferObjectManager());
 		circle.animate(200, true);
 		this.hud.registerTouchArea(circle);
 		// attach circle to the hud
@@ -184,7 +188,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		// we handle our own scene touches below "onAreaTouchEvent"
 		this.mScene.setOnAreaTouchListener(this);
 		this.hud.setOnAreaTouchListener(this);
-
+		
 		return this.mScene;
 	}
 
@@ -217,7 +221,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	// Add the Resource visuals and register/attach them to the scene.	
 	private void addResource(final float pX, final float pY) {
 		final Unit resource;
-		resource = new Unit(new Gatherer(), pX, pY, this.mBoxFaceTextureRegion, this.getVertexBufferObjectManager());
+		resource = new Unit(new Gatherer(), pX, pY, this.mWarriorTextureRegion, this.getVertexBufferObjectManager());
 		resource.animate(200, true);
 
 		this.mScene.registerTouchArea(resource);
@@ -227,7 +231,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	// Add the Civilization visuals and register/attach them to the scene.
 	private void addCiv(final float pX, final float pY) {
 		final Unit civ;
-		civ = new Unit(new Civ(), pX, pY, this.mCivTextureRegion, this.getVertexBufferObjectManager());
+		civ = new Unit(new Civ(), pX, pY, this.mCivilizationTextureRegion, this.getVertexBufferObjectManager());
 		civ.animate(1000, true);
 
 		this.mScene.registerTouchArea(civ);
