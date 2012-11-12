@@ -263,17 +263,17 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	}
 	
 	// removes the touched sprite, placeholder for handling menu on sprites
-	private void removeItem(Unit sprite){
-		System.out.println("Removed " + sprite.performGetType() +"!!!!");
+	private void removeItem(Unit unit){
+		System.out.println("Removed " + unit.performGetType() +"!!!!");
 		
 		// This area should know the type of sprite before removing,
 		//  but it functions as is written for now.
 		//  At this point, the actual class structure should be built from the Design_Doc -D
-		this.hud.unregisterTouchArea(sprite);
-		this.hud.detachChild(sprite);
+		this.hud.unregisterTouchArea(unit);
+		this.hud.detachChild(unit);
 		
-		this.mScene.unregisterTouchArea(sprite);
-		this.mScene.detachChild(sprite);
+		this.mScene.unregisterTouchArea(unit);
+		this.mScene.detachChild(unit);
 		
 		System.gc();
 	}

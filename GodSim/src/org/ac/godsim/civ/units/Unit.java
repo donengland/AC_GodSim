@@ -25,8 +25,8 @@ public class Unit extends AnimatedSprite implements GodSimConstants{
 	// Constructors
 	// ===========================================================
 
-	public Unit(IUnitType type, final float pWidth, final float pHeight, final TiledTextureRegion pTiledTextureRegion, final VertexBufferObjectManager pVertexBufferObjectManager) {
-		super(pWidth, pHeight, pTiledTextureRegion, pVertexBufferObjectManager);
+	public Unit(IUnitType type, final float pX, final float pY, final TiledTextureRegion pTiledTextureRegion, final VertexBufferObjectManager pVertexBufferObjectManager) {
+		super(pX, pY, pTiledTextureRegion, pVertexBufferObjectManager);
 		myType = type;
 		myId = 0;
 	}
