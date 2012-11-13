@@ -10,14 +10,14 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity implements OnClickListener {
 
-	private TextView tv1;
+	private TextView tv;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_god_sim);
         
-        tv1 = (TextView)findViewById(R.id.msgBox);
+        tv = (TextView)findViewById(R.id.msgBox);
         
         View newGameButton = findViewById(R.id.NewGameButton);
 		newGameButton.setOnClickListener(this);
@@ -31,6 +31,12 @@ public class MainActivity extends Activity implements OnClickListener {
 		View quitButton = findViewById(R.id.QuitGameButton);
 		quitButton.setOnClickListener(this);
 		
+		/* TODO:
+		 * Add call to db to check for existenct
+		 * if no db found, create skeleton with guest player
+		 */
+		new GodSimDB(this);
+		
     }
     
     public void onClick(View view) {
@@ -41,6 +47,7 @@ public class MainActivity extends Activity implements OnClickListener {
     		 * Activity to solicit information relevant to new game
     		 * Save this data to db
     		 */
+    		startActivity(new Intent(this, NewGame.class));
     		feedback("to be implemented");
     		break;
     	case R.id.ContinueGameButton:
@@ -74,9 +81,9 @@ public class MainActivity extends Activity implements OnClickListener {
     }*/
     
     private void feedback(String msg) {
-		String currentText = tv1.getText().toString();
+		String currentText = tv.getText().toString();
 		currentText += "\n" + msg;
-		tv1.setText(currentText);
+		tv.setText(currentText);
 	}
     
     

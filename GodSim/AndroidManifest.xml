@@ -20,7 +20,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".GodSim" android:label="@string/title_activity_god_sim" />          
+        <activity android:name=".GodSim" android:label="@string/title_activity_god_sim" />     
+        <activity android:name=".NewGame" android:label="@string/title_activity_god_sim" />
         
     </application>
 

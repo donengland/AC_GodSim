@@ -8,5 +8,13 @@
 	<string name="ContinueGame">Continue Game</string>
 	<string name="Multiplayer">Multiplayer</string>
 	<string name="QuitGame">Quit Game</string>
+	<string name="UserName">User Name</string>
+	<string name="NewPlayer">Create New Player</string>
+	<string name="EnterPlayerName">Player Name  </string>
+	<string name="Password">Password</string>
+	<string name="BlankSpace"> </string>
+	<string name="Cancel">Cancel</string>
+	<string name="SignIn">Sign In</string>
+	<string name="Play">Play</string>
 
 </resources>
