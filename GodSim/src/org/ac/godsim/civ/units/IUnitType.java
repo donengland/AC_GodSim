@@ -6,6 +6,6 @@ package org.ac.godsim.civ.units;
  * @author Don England
  * @since 11-November-2012
  */
-public interface IUnitType {
+public abstract interface IUnitType {
 	public String getType();
 }

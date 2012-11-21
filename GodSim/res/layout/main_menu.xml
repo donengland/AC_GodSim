@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/black"
+    android:padding="6dp" >
+
+    
+    <TextView
+        android:id="@+id/lblPlayer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="15dp"
+        android:text="@string/EnterPlayerName"
+        android:textColor="@color/white"
+        android:background="@color/black"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    
+     <Spinner
+        android:id="@+id/spinnerPlayer"
+        android:prompt="@string/SelectPlayer"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/lblPlayer"
+        android:background="@color/white"
+       	android:layout_marginTop="15dp"
+    	android:layout_marginLeft="10dp" /> 
+
+     <TextView
+        android:id="@+id/lblNewPlayer"
+        android:layout_below="@+id/lblPlayer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="15dp"
+        android:text="@string/EnterNewPlayer"
+        android:textColor="@color/white"
+        android:background="@color/black"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+     	<EditText
+        android:id="@+id/txtNewPlayerName"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/lblNewPlayer"
+        android:layout_alignLeft="@+id/spinnerPlayer"
+        android:layout_below="@+id/spinnerPlayer"
+        android:background="@color/white"
+        android:inputType="text"
+        android:textColor="@color/black"
+        android:textSize="18dp" >
+        <requestFocus />
+    </EditText>
+    
+    <Button
+        android:id="@+id/PlayGameButton"
+        style="@style/menuButton"
+        android:layout_above="@+id/PlayerMaintenanceButton"
+        android:layout_alignParentLeft="true"
+        android:text="@string/PlayGame" />
+    
+    <Button
+        android:id="@+id/PlayerMaintenanceButton"
+        style="@style/menuButton"
+        android:layout_above="@+id/MultiplayerButton"
+        android:layout_alignParentLeft="true"
+        android:text="@string/PlayerMaintenance" />
+
+    <Button
+        android:id="@+id/MultiplayerButton"
+        style="@style/menuButton"
+        android:layout_above="@+id/QuitGameButton"
+        android:layout_alignParentLeft="true"
+        android:text="@string/Multiplayer" />
+
+    <Button
+        android:id="@+id/QuitGameButton"
+        style="@style/menuButton"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:text="@string/QuitGame" />
+
+    <TextView
+        android:id="@+id/msgBox"
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        android:layout_above="@+id/PlayGameButton"
+        android:layout_alignLeft="@+id/PlayGameButton"
+        android:layout_marginBottom="16dp" />
+
+</RelativeLayout>
