@@ -52,32 +52,48 @@
         <requestFocus />
     </EditText>
     
+	<!-- Remove this section later
+	
+	<Button
+        android:id="@+id/civMenuTestButton"
+        style="@style/ButtonText"
+        android:background="@drawable/black_button"
+        android:layout_above="@+id/PlayGameButton"
+        android:text="@string/hello_world" />
+        
+        for testing the civmenu drawable only -->
+	<!-- ========================================== -->
+	
+	
+	
     <Button
         android:id="@+id/PlayGameButton"
-        style="@style/menuButton"
+        style="@style/ButtonText"
+        android:background="@drawable/yellow_button"
         android:layout_above="@+id/PlayerMaintenanceButton"
-        android:layout_alignParentLeft="true"
         android:text="@string/PlayGame" />
     
     <Button
         android:id="@+id/PlayerMaintenanceButton"
-        style="@style/menuButton"
-        android:layout_above="@+id/MultiplayerButton"
-        android:layout_alignParentLeft="true"
+        style="@style/ButtonText"
+        android:background="@drawable/red_button"
+        android:layout_above="@+id/QuitGameButton"
         android:text="@string/PlayerMaintenance" />
 
+    <!-- Not implementing this feature
     <Button
         android:id="@+id/MultiplayerButton"
-        style="@style/menuButton"
+        style="@style/ButtonText"
+        android:background="@drawable/blue_button"
         android:layout_above="@+id/QuitGameButton"
-        android:layout_alignParentLeft="true"
         android:text="@string/Multiplayer" />
-
+	 -->
+ 
     <Button
         android:id="@+id/QuitGameButton"
-        style="@style/menuButton"
+        style="@style/ButtonText"
+        android:background="@drawable/green_button"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
         android:text="@string/QuitGame" />
 
     <TextView

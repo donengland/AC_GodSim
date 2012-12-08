@@ -7,5 +7,6 @@ package org.ac.godsim.civ.units;
  * @since 11-November-2012
  */
 public abstract interface IUnitType {
-	public String getType();
+	
+	abstract public String getType();
 }

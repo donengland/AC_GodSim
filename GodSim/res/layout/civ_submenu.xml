@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_civ_submenu"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/civ_submenu_bkgrnd" >
+
+    
+    <TextView
+        android:id="@+id/lblGatherers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/lblScholars"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="5dp"
+        android:text="@string/Gatherers" />
+    
+    <ProgressBar
+        android:id="@+id/barGatherers"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/barScholars"
+        android:layout_alignTop="@+id/lblGatherers"
+        android:max="100"
+        android:progress="75" />
+    
+    <TextView
+        android:id="@+id/lblScholars"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/lblWarriors"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="5dp"
+        android:text="@string/Scholars" />
+
+    <ProgressBar
+        android:id="@+id/barScholars"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/lblScholars"
+        android:layout_marginLeft="18dp"
+        android:layout_toRightOf="@+id/lblScholars"
+        android:max="100"
+        android:progress="75" />
+    
+    <TextView
+        android:id="@+id/lblWarriors"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="5dp"
+        android:text="@string/Warriors" />
+
+    <ProgressBar
+        android:id="@+id/barWarriors"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/barScholars"
+        android:layout_below="@+id/lblScholars"
+        android:max="100"
+        android:progress="75" />
+
+</RelativeLayout>

@@ -1,11 +1,15 @@
 package org.ac.godsim;
 
 import java.util.List;
+
 import org.ac.godsim.persistentdata.GodSimDB;
+import org.ac.godsim.sharedprefs.SharedPrefs;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
@@ -30,7 +34,13 @@ public class MainActivity extends Activity implements OnClickListener, OnItemSel
 	private TextView tv;
 	Spinner spinner;
 	TextView newPlayer;
-	final static int MAINT_ACTIVITY = 1; //this is to track calling/return from the player maintenanance activity
+	String thisPlayer;
+	int thisGame;
+	//SharedPreferences prefs;
+	//SharedPreferences.Editor prefsEditor;
+	final String lastPlayerPref = "LAST_PLAYER";
+	final static int PLAY_GAME = 1; //this is to track calling / returning from a a game
+	final static int MAINT_ACTIVITY = 2; //this is to track calling/return from the player maintenance activity 
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,8 +55,8 @@ public class MainActivity extends Activity implements OnClickListener, OnItemSel
         View maintenanceButton = findViewById(R.id.PlayerMaintenanceButton);
 		maintenanceButton.setOnClickListener(this);
 
-		View multiplayerButton = findViewById(R.id.MultiplayerButton);
-		multiplayerButton.setOnClickListener(this);
+//		View multiplayerButton = findViewById(R.id.MultiplayerButton);
+//		multiplayerButton.setOnClickListener(this);
 		
 		View quitButton = findViewById(R.id.QuitGameButton);
 		quitButton.setOnClickListener(this);
@@ -55,15 +65,44 @@ public class MainActivity extends Activity implements OnClickListener, OnItemSel
 		/* TODO: delete this code later */
 		GodSimDB.deleteDB(this);
 		
+		/* Load the shared preferences */
+//		prefs = this.getSharedPreferences("GodSimPrefs", MODE_PRIVATE);
+//		String lastPlayer = prefs.getString(lastPlayerPref, "test");
+//		prefsEditor = prefs.edit().putString(lastPlayerPref, "test");
+//		prefsEditor.commit();
+		
 		/* Create the database
 		 * Note that this will only create a db if none exists
 		 */
 		new GodSimDB(this);
+			
+		/* Load the default settings */
+		List<String> settings = GodSimDB.getSettings();
 		
 		/* populate the spinner with user names */
 		spinner = (Spinner) findViewById(R.id.spinnerPlayer);
 		spinner.setOnItemSelectedListener(this);
-		attachPlayersToSpinner("Guest");
+		
+		String lastPlayer;
+		if (settings.isEmpty()) {
+			/* this means that we have no stored settings (probably due to an empty database) */
+			/* populate the spinner with just the "Guest" account */
+			System.err.println("Empty DB discovered. Adding Guest player to spinner");
+			attachPlayersToSpinner("Guest");
+			thisGame = 1;
+		} else {
+			/* Since we have saved values, use them to initiate state */
+			lastPlayer = settings.get(0);
+			System.err.printf("the last player to play was: %s\n", lastPlayer);
+			attachPlayersToSpinner(lastPlayer);
+			System.err.printf("retrieving game number for player: %s\n", lastPlayer);
+			thisGame = GodSimDB.getGame(lastPlayer);
+			System.err.printf("Game number for player %s is: %d\n", lastPlayer, thisGame);
+			System.err.println("before here");
+		}
+		
+		/* Take this out if not running tests */
+		Tests.runTests();
 		
 		/* Create a listener for new player entry */
 		TextView.OnEditorActionListener newPlayerListener = new TextView.OnEditorActionListener() {
@@ -74,7 +113,12 @@ public class MainActivity extends Activity implements OnClickListener, OnItemSel
 					final EditText newPlayer = (EditText) findViewById(R.id.txtNewPlayerName);
 					String player = newPlayer.getText().toString();
 					if (!player.equals("")) {
+						System.err.println("editor action listener");
 						GodSimDB.addPlayer(player, "password");
+						GodSimDB.updateSetting("lastPlayer", player);
+						//prefsEditor.putString(lastPlayerPref, player);
+						//prefsEditor.commit();
+						//System.err.println(prefs.getString(lastPlayerPref, "Guest"));
 						/* Update the spinner list */
 						attachPlayersToSpinner(newPlayer.getText().toString());
 						newPlayer.setText("");
@@ -97,13 +141,24 @@ public class MainActivity extends Activity implements OnClickListener, OnItemSel
     
     private void attachPlayersToSpinner(String defPlayer) {
         
-        List<String> players = GodSimDB.queryAllRows("PLAYERS_TABLE");
+        List<String> players = GodSimDB.getAllRows("PLAYERS_TABLE");
         
         if (players.isEmpty()) {
         	System.err.println("PLAYERS table is empty; Adding guest player");
-        	GodSimDB.addPlayer("Guest", "password");
+        	GodSimDB.addPlayer(defPlayer, "password");
+        	
+//        	String temp = GodSimDB.getOneValue("PLAYERS_TABLE", "PLAYER_NAME_COLUMN", "Guest", "PLAYER_NAME_COLUMN");
+//        	System.err.printf("testing: %s\n", temp);
+        	
+        	GodSimDB.updateSetting("lastPlayer", defPlayer);
+        	String temp = GodSimDB.getSettings().get(0);
+        	System.err.printf("Verifying settings updated: %s\n", temp);
+        	//prefsEditor.putString(lastPlayerPref, "Guest");
+        	//prefsEditor.commit();
+        	//System.err.println(prefs.getString(lastPlayerPref, "xx"));
+        	
         	/* Update list to include new result */
-        	players = GodSimDB.queryAllRows("PLAYERS_TABLE");
+        	players = GodSimDB.getAllRows("PLAYERS_TABLE");
         }
         
         /* Data adapter for spinner */ 
@@ -122,59 +177,62 @@ public class MainActivity extends Activity implements OnClickListener, OnItemSel
 
     
     public void onClick(View view) {
+    	final Bundle bundle = new Bundle();
+    	Intent i;
+    	thisPlayer = (String) spinner.getSelectedItem();
     	switch (view.getId()) {
 	    	case R.id.PlayGameButton:
-	    		/* TODO:
-	    		 * Load saved game state from db
-	    		 */
-	    		startActivity(new Intent(this, GodSim.class));
+	    		if (isNewPlayer()) { GodSimDB.addPlayer(thisPlayer, "password"); } 
+	    		bundle.putString("thisPlayer", thisPlayer);
+	    		i = new Intent(this, GodSim.class);
+	    		i.putExtras(bundle);
+	    		System.err.println("starting game");
+	    		startActivityForResult(i, PLAY_GAME);
 	    		break;
 	    	case R.id.PlayerMaintenanceButton:
-	    		final Bundle bundle = new Bundle();
 	    		bundle.putString("defPlayer", (String) spinner.getSelectedItem());
-	    		Intent i = new Intent(this, PlayerMaintenance.class);
+	    		i = new Intent(this, PlayerMaintenance.class);
 	    		i.putExtras(bundle);
 	    		startActivityForResult(i, MAINT_ACTIVITY);
-	    		//startActivity(i);
 	    		break;
-	    	case R.id.MultiplayerButton:
-	    		/* TODO:
-	    		 * Wide open. Leave this button ineffective until much later
-	    		 */
-	    		feedback("to be implemented");
-	    		break;
+//	    	case R.id.MultiplayerButton:
+//	    		/* TODO:
+//	    		 * Wide open. Leave this button ineffective until much later
+//	    		 */
+//	    		feedback("to be implemented");
+//	    		break;
 	    	case R.id.QuitGameButton:
-	    		/* TODO:
-	    		 * Save game state to db
-	    		 * call onStop()???
-	    		 */
+	    		System.err.println(thisPlayer);
+	    		//prefsEditor.putString(lastPlayerPref, thisPlayer);
 	    		finish();
 	    		moveTaskToBack(true);
 	    		break;
 	    	}
     }
 
+    private Boolean isNewPlayer () {
+    	String p = (String) spinner.getSelectedItem();
+    	return GodSimDB.isNewPlayer(p);    	
+    }
+    
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    switch(requestCode) {
+	    	case PLAY_GAME:
+	    		if (resultCode == RESULT_OK) {
+	    			//TODO this is where we save the user's progress and other settings 
+	    		}
+	    	
+	    		break;
 		    case MAINT_ACTIVITY:
-		    	System.err.println("here");
 		    	if (resultCode == RESULT_OK) {
 		    		String defPlayer = data.getStringExtra("player");
-		    		System.err.println(defPlayer);
 		    		attachPlayersToSpinner(defPlayer);
-		    		System.err.println("break");
-		    		break;
 		    	}
+		    	break;
 		    default:
 		    	break;
 	    }
     }   
-    
-    /*public void onPause() {
-     * Not sure how to implement this. If I leave it active, hitting Esc from the map kicks all the way out
-     * Leave inactive for now.
-    	feedback("onPause()");
-    }*/
     
     private void feedback(String msg) {
 		String currentText = tv.getText().toString();
@@ -189,10 +247,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemSel
     }
 
 	@Override
-	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
-			long arg3) {
-		System.err.println("onItemSelected");
-		
+	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 	}
 
 	@Override
@@ -202,9 +257,13 @@ public class MainActivity extends Activity implements OnClickListener, OnItemSel
 		
 	}
 	
-//	@Override
-//	public void onResume() {
-//		//PlayerMaintenance.get
-//		
-//	}
+	@Override
+	public void onPause() {
+		super.onPause();
+		//TODO: save game state
+		System.err.printf("storing last player setting: %s\n", thisPlayer);
+		GodSimDB.updateSetting("lastPlayer", thisPlayer);
+		//prefsEditor.putString(lastPlayerPref, thisPlayer);
+		
+	}
 }

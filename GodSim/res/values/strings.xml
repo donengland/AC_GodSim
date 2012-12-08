@@ -21,5 +21,8 @@
 	<string name="EnterNewName">Enter New Name</string>
 	<string name="DeletePlayer">Delete Player</string>
 	<string name="RenamePlayer">Rename Player</string>
+	<string name="Gatherers">Gatherers</string>
+	<string name="Scholars">Scholars</string>
+	<string name="Warriors">Warriors</string>
 	
 </resources>

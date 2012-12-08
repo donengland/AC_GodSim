@@ -2,6 +2,8 @@ package org.ac.godsim.civ.units;
 
 import org.ac.godsim.utils.constants.GodSimConstants;
 import org.andengine.entity.sprite.AnimatedSprite;
+import org.andengine.opengl.texture.region.ITiledTextureRegion;
+import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 

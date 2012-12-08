@@ -67,7 +67,7 @@ public class PlayerMaintenance extends Activity implements OnClickListener, OnIt
 
 	private void attachPlayersToSpinner(String defPlayer) {
         
-        List<String> players = GodSimDB.queryAllRows("PLAYERS_TABLE");
+        List<String> players = GodSimDB.getAllRows("PLAYERS_TABLE");
         
         /* Data adapter for spinner */ 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, 
@@ -126,6 +126,7 @@ public class PlayerMaintenance extends Activity implements OnClickListener, OnIt
     		GodSimDB.updatePlayer(player, newName);
     		feedback = "The name of player " + player + " has been changed to " + newName;
     		msgBox.setText(feedback);
+    		System.err.println("clearning new name field");
     		newNameField.setText("");
     		attachPlayersToSpinner(newName);
     		break;

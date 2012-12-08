@@ -54,23 +54,23 @@
     
     <Button
         android:id="@+id/DeletePlayerButton"
-        style="@style/menuButton"
+        style="@style/ButtonText"
+        android:background="@drawable/red_button"
         android:layout_above="@+id/RenamePlayerButton"
-        android:layout_alignParentLeft="true"
         android:text="@string/DeletePlayer" />
 
     <Button
         android:id="@+id/RenamePlayerButton"
-        style="@style/menuButton"
+        style="@style/ButtonText"
+        android:background="@drawable/blue_button"
         android:layout_above="@+id/CloseButton"
-        android:layout_alignParentLeft="true"
         android:text="@string/RenamePlayer" />
 
     <Button
         android:id="@+id/CloseButton"
-        style="@style/menuButton"
+        style="@style/ButtonText"
+        android:background="@drawable/green_button"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
         android:text="@string/Close" />
 
     <TextView
