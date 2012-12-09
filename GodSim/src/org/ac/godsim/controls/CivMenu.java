@@ -1,5 +1,7 @@
 package org.ac.godsim.controls;
 
+import org.andengine.engine.camera.hud.HUD;
+
 
 
 /**
@@ -15,8 +17,8 @@ public class CivMenu implements ControlType {
 	}
 
 	@Override
-	public void updateLevel() {
-		// TODO Auto-generated method stub
+	public void updateLevel(HUD hud) {
+		System.err.println("launch expanded HUD");
 		
 	}
 

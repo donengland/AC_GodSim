@@ -1,5 +1,7 @@
 package org.ac.godsim.controls;
 
+import org.andengine.engine.camera.hud.HUD;
+
 /**
  * (c) 2012 Randall Eastland
  *
@@ -13,7 +15,7 @@ public class ScholarDown implements ControlType {
 	}
 
 	@Override
-	public void updateLevel() {
+	public void updateLevel(HUD hud) {
 		System.err.println("decreasing scholar level");
 		//TODO: Handle level change request
 		

@@ -1,4 +1,8 @@
 package org.ac.godsim.controls;
+
+import org.ac.godsim.GodSim;
+import org.andengine.engine.camera.hud.HUD;
+
 /**
  * (c) 2012 Randall Eastland
  *
@@ -8,5 +12,5 @@ package org.ac.godsim.controls;
 public interface ControlType {
 	
 	public String getType();
-	public void updateLevel();
+	public void updateLevel(HUD hud);
 }

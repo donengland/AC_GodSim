@@ -9,9 +9,11 @@ import org.ac.godsim.civ.units.Scholar;
 import org.ac.godsim.civ.units.Unit;
 import org.ac.godsim.civ.units.Warrior;
 import org.ac.godsim.controls.CivMenu;
+import org.ac.godsim.controls.CloseButton;
 import org.ac.godsim.controls.GathererDown;
 import org.ac.godsim.controls.GathererUp;
 import org.ac.godsim.controls.ControlPanel;
+import org.ac.godsim.controls.PanelLaunchButton;
 import org.ac.godsim.controls.ScholarDown;
 import org.ac.godsim.controls.ScholarUp;
 import org.ac.godsim.controls.WarriorDown;
@@ -35,6 +37,7 @@ import org.andengine.entity.scene.IOnAreaTouchListener;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.ITouchArea;
 import org.andengine.entity.scene.Scene;
+import org.andengine.entity.text.Text;
 import org.andengine.entity.util.FPSLogger;
 import org.andengine.extension.tmx.TMXLayer;
 import org.andengine.extension.tmx.TMXLoader;
@@ -59,6 +62,8 @@ import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 //import org.andengine.util.Constants;
 import org.andengine.util.debug.Debug;
+import org.andengine.opengl.font.Font;
+import org.andengine.opengl.font.FontFactory;
 
 import android.content.Intent;
 import android.content.res.Resources;
@@ -67,6 +72,7 @@ import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PictureDrawable;
 import android.view.ViewGroup;
@@ -118,8 +124,8 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	private float camTargetY = CAMERA_HEIGHT/2;
 
 	//Hud top left corner
-	private int hudTop = CAMERA_HEIGHT - 91;;
-	private int hudLeft = CAMERA_WIDTH / 6;
+	private static int hudTop = CAMERA_HEIGHT - 91;;
+	private static int hudLeft = CAMERA_WIDTH / 6;
 	private int hudHeight = 91; //fills the bottom of the screen from the point where the hud starts
 	private int hudWidth = CAMERA_WIDTH * 2/3;   //makes the hud take up 2/3 of the horizontal width of the screen
 	private int hudControlDim = 16; //these controls are square - use for both height and width
@@ -128,14 +134,18 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	
 	// HUD for menu displays
 	private HUD hud;
+	private GodSimHudController hudController;
 	private BitmapTextureAtlas mMenuBitmapTextureAtlas;
 	private BitmapTextureAtlas mUpArrowBitmapTextureAtlas;
-//	private BitmapTextureAtlas mLaunchPanelBitmapTextureAtlas;
 	private BitmapTextureAtlas mDownArrowBitmapTextureAtlas;
+	private BitmapTextureAtlas mLaunchPanelBitmapTextureAtlas;
+	private BitmapTextureAtlas mCloseButtonBitmapTextureAtlas;
 	private TextureRegion mMenuContainerTextureRegion;
 	private TextureRegion mUpArrowTextureRegion;
 	private TextureRegion mDownArrowTextureRegion;
-//	private TextureRegion mLaunchPanelTextureRegion;
+	private TextureRegion mLaunchPanelTextureRegion;
+	private TextureRegion mCloseButtonTextureRegion;
+	private Font mFont;
 	
 	// Temp Civilization
 	//private Civilization myCiv;
@@ -191,10 +201,19 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		this.mDownArrowTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mDownArrowBitmapTextureAtlas, this, "down.png", 0, 0);
 		this.mDownArrowBitmapTextureAtlas.load();
 		
-//		/* This on is for an icon to launch the primary control panel */
-//		this.mLaunchPanelBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 32, 32, TextureOptions.DEFAULT);
-//		this.mLaunchPanelTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mLaunchPanelBitmapTextureAtlas, this, "control_panel.png", 0, 0);
-//		this.mLaunchPanelBitmapTextureAtlas.load();
+		/* This on is for an icon to launch the primary control panel */
+		this.mLaunchPanelBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 32, 32, TextureOptions.DEFAULT);
+		this.mLaunchPanelTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mLaunchPanelBitmapTextureAtlas, this, "control_panel.png", 0, 0);
+		this.mLaunchPanelBitmapTextureAtlas.load();
+		
+		/* This on is for an icon to launch the primary control panel */
+		this.mCloseButtonBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 32, 32, TextureOptions.DEFAULT);
+		this.mCloseButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mCloseButtonBitmapTextureAtlas, this, "close.png", 0, 0);
+		this.mCloseButtonBitmapTextureAtlas.load();
+		
+		/* Font for control level feedback on the Hud */
+		this.mFont = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD), 12);
+		this.mFont.load();
 		
 	}
 	
@@ -247,44 +266,12 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		
 		/* Create the stationary section of the game where the player can make certain adjustments 
 		 * This is called a 'hud' */
-		//makeBasicHud();
-		//HUD hud = makeHudWithControls(hud);
-		hud = new HUD();
 		
-		final ControlPanel container;
-		final ControlPanel scholarUp;
-		final ControlPanel scholarDown;
-		final ControlPanel warriorUp;
-		final ControlPanel warriorDown;
-		final ControlPanel gathererUp;
-		final ControlPanel gathererDown;
-		
-		container = new ControlPanel(new CivMenu(), hudLeft, hudTop, this.mMenuContainerTextureRegion, this.getVertexBufferObjectManager());
-		
-		scholarUp = new ControlPanel(new ScholarUp(), hudLeft + 70 , hudTop + 40, this.mUpArrowTextureRegion, this.getVertexBufferObjectManager());
-		scholarDown = new ControlPanel(new ScholarDown(), hudLeft + 70 , hudTop + 40+18, this.mDownArrowTextureRegion, this.getVertexBufferObjectManager());
-		
-		warriorUp = new ControlPanel(new WarriorUp(), hudLeft + 70 + 85 , hudTop + 40, this.mUpArrowTextureRegion, this.getVertexBufferObjectManager());
-		warriorDown = new ControlPanel(new WarriorDown(), hudLeft + 70 + 85 , hudTop + 40+18, this.mDownArrowTextureRegion, this.getVertexBufferObjectManager());
-		
-		gathererUp = new ControlPanel(new GathererUp(), hudLeft + 70 + 85*2, hudTop + 40, this.mUpArrowTextureRegion, this.getVertexBufferObjectManager());
-		gathererDown = new ControlPanel(new GathererDown(), hudLeft + 70 + 85*2, hudTop + 40+18, this.mDownArrowTextureRegion, this.getVertexBufferObjectManager());
-		
-		//hud.registerTouchArea(container); //registering this conflicts with the other touch areas
-		hud.registerTouchArea(scholarUp);
-		hud.registerTouchArea(scholarDown);
-		hud.registerTouchArea(warriorUp);
-		hud.registerTouchArea(warriorDown);
-		hud.registerTouchArea(gathererUp);
-		hud.registerTouchArea(gathererDown);
-		
-		hud.attachChild(container);
-		hud.attachChild(scholarUp);
-		hud.attachChild(scholarDown);
-		hud.attachChild(warriorUp);
-		hud.attachChild(warriorDown);
-		hud.attachChild(gathererUp);
-		hud.attachChild(gathererDown);
+//		hudController = new GodSimHudController(this.getEngine().getCamera());
+//		hud = hudController.makeBasicHud();
+//		hud = makeBasicHud(new HUD());
+		hud = makeHudWithControls(new HUD());
+
 		
 		this.mSmoothChaseCamera.setHUD(hud);
 		
@@ -293,7 +280,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 
 		// we handle our own scene touches below "onAreaTouchEvent"
 		this.mScene.setOnAreaTouchListener(this);
-		this.hud.setOnAreaTouchListener(this);
+		hud.setOnAreaTouchListener(this);
 		
 		return this.mScene;
 	}
@@ -320,19 +307,64 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		return thisGame;
 	}
 	
-//	private void makeBasicHud() {
-//		//hud = new HUD();
-//		final Menu launchPanel = new Menu(new CivMenu(), 10, CAMERA_HEIGHT - 32 - 10, this.mLaunchPanelTextureRegion, this.getVertexBufferObjectManager());
-//		hud.registerTouchArea(launchPanel);
-//		hud.attachChild(launchPanel);
-//		this.mSmoothChaseCamera.setHUD(hud);
-//	}
+	public HUD makeBasicHud(HUD basicHud) {
+		final ControlPanel launchPanel = new ControlPanel(new PanelLaunchButton(), 10, CAMERA_HEIGHT - 32 - 10, this.mLaunchPanelTextureRegion, this.getVertexBufferObjectManager());
+		basicHud.registerTouchArea(launchPanel);
+		basicHud.attachChild(launchPanel);
+		return basicHud;
+	}
 	
-//	private HUD makeHudWithControls(HUD hud) {
-//		
-//		return hud;
-//
-//	}
+	public HUD makeHudWithControls(HUD expHud) {
+		
+		/* Text fields for control level feedback */
+		final Text scholarLevel = new Text(hudLeft+85, hudTop+50, this.mFont, "1", "1".length(), this.getVertexBufferObjectManager());
+		final Text warriorLevel = new Text(hudLeft+85+85, hudTop+50, this.mFont, "2", "2".length(), this.getVertexBufferObjectManager());
+		final Text gathererLevel = new Text(hudLeft+85+85*2, hudTop+50, this.mFont, "3", "3".length(), this.getVertexBufferObjectManager());
+		
+		final ControlPanel container;
+		final ControlPanel close;
+		final ControlPanel scholarUp;
+		final ControlPanel scholarDown;
+		final ControlPanel warriorUp;
+		final ControlPanel warriorDown;
+		final ControlPanel gathererUp;
+		final ControlPanel gathererDown;
+		
+		container = new ControlPanel(new CivMenu(), hudLeft, hudTop, mMenuContainerTextureRegion, this.getVertexBufferObjectManager());
+		close = new ControlPanel(new CloseButton(), hudLeft + hudWidth - 21, hudTop + hudHeight - 21, this.mCloseButtonTextureRegion, this.getVertexBufferObjectManager());
+		
+		scholarUp = new ControlPanel(new ScholarUp(), hudLeft + 60 , hudTop + 40, this.mUpArrowTextureRegion, this.getVertexBufferObjectManager());
+		scholarDown = new ControlPanel(new ScholarDown(), hudLeft + 60 , hudTop + 40+18, this.mDownArrowTextureRegion, this.getVertexBufferObjectManager());
+		
+		warriorUp = new ControlPanel(new WarriorUp(), hudLeft + 60 + 85 , hudTop + 40, this.mUpArrowTextureRegion, this.getVertexBufferObjectManager());
+		warriorDown = new ControlPanel(new WarriorDown(), hudLeft + 60 + 85 , hudTop + 40+18, this.mDownArrowTextureRegion, this.getVertexBufferObjectManager());
+		
+		gathererUp = new ControlPanel(new GathererUp(), hudLeft + 60 + 85*2, hudTop + 40, this.mUpArrowTextureRegion, this.getVertexBufferObjectManager());
+		gathererDown = new ControlPanel(new GathererDown(), hudLeft + 60 + 85*2, hudTop + 40+18, this.mDownArrowTextureRegion, this.getVertexBufferObjectManager());
+		
+		//hud.registerTouchArea(container); //registering this conflicts with the other touch areas
+		expHud.registerTouchArea(close);
+		expHud.registerTouchArea(scholarUp);
+		expHud.registerTouchArea(scholarDown);
+		expHud.registerTouchArea(warriorUp);
+		expHud.registerTouchArea(warriorDown);
+		expHud.registerTouchArea(gathererUp);
+		expHud.registerTouchArea(gathererDown);
+		
+		expHud.attachChild(container);
+		expHud.attachChild(close);
+		expHud.attachChild(scholarUp);
+		expHud.attachChild(scholarDown);
+		expHud.attachChild(warriorUp);
+		expHud.attachChild(warriorDown);
+		expHud.attachChild(gathererUp);
+		expHud.attachChild(gathererDown);
+		expHud.attachChild(scholarLevel);
+		expHud.attachChild(warriorLevel);
+		expHud.attachChild(gathererLevel);
+		
+		return expHud;
+	}
 	
 	
 	private void createResourceObjects(TMXTiledMap tmxmap){
@@ -414,43 +446,13 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 				try {
 					castFailed = false;
 					control = (ControlPanel) pTouchArea;
-					control.updateLevel();
+					control.updateLevel(hud);
 				} catch (Exception ex) {
 					castFailed = true;
 					System.err.println("unknown touch event");
 				} 
 			}
 			
-//			if ( type == "civilization" ) {
-//				//TODO: this is where we want to raise the submenu when a civ is pressed
-//				System.err.println("submenu requested");
-//			} else if (type == "scholarUp") {
-//				//TODO: this is where we want to handle the up/down arrow control
-//				System.err.println("scholar increase requested");
-//			} else if (type == "scholarDown") {
-//				//TODO: this is where we want to handle the up/down arrow control
-//				System.err.println("scholar decrease requested");
-//			} else if (type == "warriorUp") {
-//				//TODO: this is where we want to handle the up/down arrow control
-//				System.err.println("warrior increase requested");
-//			} else if (type == "warriorDown") {
-//				//TODO: this is where we want to handle the up/down arrow control
-//				System.err.println("warrior decrease requested");
-//			} else if (type == "gathererUp") {
-//				//TODO: this is where we want to handle the up/down arrow control
-//				System.err.println("gatherer increase requested");
-//			} else if (type == "gathererDown") {
-//				//TODO: this is where we want to handle the up/down arrow control
-//				System.err.println("gatherer decrease requested");
-//			} else if ( type == "civMenu" ) {
-//				//TODO: this is where we want to act on specific submenu requests
-//				System.err.println("civMenu action selected");
-//			} else { 
-//				System.err.println("unknown touch event"); 
-//			}
-			
-			
-			//this.removeItem((Unit)pTouchArea);
 			return true;
 		}
 		// let the handler know if we did not handle an area event

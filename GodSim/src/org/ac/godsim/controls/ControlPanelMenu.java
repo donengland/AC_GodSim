@@ -1,6 +1,7 @@
 package org.ac.godsim.controls;
 
 import org.ac.godsim.GodSim;
+import org.andengine.engine.camera.hud.HUD;
 
 /**
  * (c) 2012 Randall Eastland
@@ -16,7 +17,7 @@ public class ControlPanelMenu implements ControlType {
 	}
 
 	@Override
-	public void updateLevel() {
+	public void updateLevel(HUD hud) {
 		/* In this case, this is actually an onClick method */
 		GodSim.launchFullControlPanel();
 	}

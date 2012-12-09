@@ -59,12 +59,7 @@ public class GodSimDB {
         String selectAll = "SELECT * FROM " + table; 
   
         SQLiteDatabase db = godSimDBOpenHelper.getReadableDatabase(); 
-        Cursor cursor = db.rawQuery(selectAll, null); 
-   
-//        if (cursor.moveToFirst()) { 
-//            do { labels.add(cursor.getString(1)); }
-//            while (cursor.moveToNext()); 
-//        } 
+        Cursor cursor = db.rawQuery(selectAll, null);  
         
         while (cursor.moveToNext()) {
 			labels.add(cursor.getString(1));
@@ -430,7 +425,7 @@ public class GodSimDB {
 		SQLiteDatabase db = godSimDBOpenHelper.getWritableDatabase();
 		String where = PLAYER_NAME_COLUMN + "= ?";
 		Cursor cursor = db.query(GodSimDBOpenHelper.PLAYERS_TABLE, new String[] {PLAYER_NAME_COLUMN}, where, new String[] {oldName}, null, null, null);
-		if (cursor != null) {
+		if (!cursor.moveToNext()) {
 			/* the record doesn't exist, cancel the operation */
 			return false;
 		}
@@ -551,6 +546,14 @@ public class GodSimDB {
 		return -1;
 	}
 	
+	public static String getLastPlayer() {
+		SQLiteDatabase db = godSimDBOpenHelper.getReadableDatabase();
+		String where = SETTING_COLUMN + "= ?";
+		Cursor cursor = db.query(GodSimDBOpenHelper.SETTINGS_TABLE, new String[] {VALUE_COLUMN}, where, new String[] {"lastPlayer"}, null, null, null);
+		if (cursor.moveToNext()) {return cursor.getString(0);}
+		System.err.println("in GodSimDB.getLastPlayer, no last player found");
+		return "Guest";
+	}
 	
 	/** Use this method to retrieve the number of the game associated with a 
 	 * given player. The player name is the String variable that matches the 

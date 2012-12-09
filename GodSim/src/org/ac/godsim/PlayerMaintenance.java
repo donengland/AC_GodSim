@@ -138,14 +138,5 @@ public class PlayerMaintenance extends Activity implements OnClickListener, OnIt
     		finish();
     		break;
     	}
-	}
-	
-//	public void onStop() {
-//		System.err.println("onStop");
-//	}
-	
-//	public void onPause() {
-//		System.err.println("onPause");
-//	}
-	
+	}	
 }

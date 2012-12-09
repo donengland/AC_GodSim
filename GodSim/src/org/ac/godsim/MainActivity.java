@@ -63,7 +63,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemSel
 		
 		/* Delete any existing databases for testing purposes */
 		/* TODO: delete this code later */
-		GodSimDB.deleteDB(this);
+//		GodSimDB.deleteDB(this);
 		
 		/* Load the shared preferences */
 //		prefs = this.getSharedPreferences("GodSimPrefs", MODE_PRIVATE);
@@ -92,7 +92,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemSel
 			thisGame = 1;
 		} else {
 			/* Since we have saved values, use them to initiate state */
-			lastPlayer = settings.get(0);
+			lastPlayer = GodSimDB.getLastPlayer();
 			System.err.printf("the last player to play was: %s\n", lastPlayer);
 			attachPlayersToSpinner(lastPlayer);
 			System.err.printf("retrieving game number for player: %s\n", lastPlayer);

@@ -48,6 +48,7 @@ public class Tests {
 		civTest = GodSimDB.getCivs("1"); 
 		for (String c : civTest) {System.err.printf("Game 1, Updated Value for Civ: %s\n", c);}
 		
+		//**********************************************************************************************************************
 		
 		/* TEST #4 - UPDATE the HEALTH, X, and Y values and output them for verification */
 		for (int i = 1; i <= 10; i++) {

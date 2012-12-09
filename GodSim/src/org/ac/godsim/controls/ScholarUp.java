@@ -3,6 +3,7 @@ package org.ac.godsim.controls;
 import java.util.List;
 
 import org.ac.godsim.persistentdata.GodSimDB;
+import org.andengine.engine.camera.hud.HUD;
 
 /**
  * (c) 2012 Randall Eastland
@@ -16,7 +17,7 @@ public class ScholarUp implements ControlType {
 		return "scholarUp";
 	}
 	
-	public void updateLevel() {
+	public void updateLevel(HUD hud) {
 		System.err.println("increasing scholar level");
 		//TODO: Handle level change request
 		

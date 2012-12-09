@@ -1,5 +1,7 @@
 package org.ac.godsim.controls;
 
+import org.ac.godsim.GodSim;
+import org.andengine.engine.camera.hud.HUD;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
@@ -37,8 +39,8 @@ public class ControlPanel extends Sprite {
 		return myType.getType();
 	}
 	
-	public void updateLevel() {
-		myType.updateLevel();
+	public void updateLevel(HUD hud) {
+		myType.updateLevel(hud);
 	}
 	
 }
