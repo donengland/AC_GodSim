@@ -309,8 +309,8 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 				totalElasped += pSecondsElasped;
 				if(totalElasped > 0.0333f){
 					//System.out.println("Seconds Elasped: " + totalElasped);
+					myCiv.updateUnits(totalElasped);
 					totalElasped = 0.0f;
-					myCiv.updateUnits();
 				}
 			}
 		});

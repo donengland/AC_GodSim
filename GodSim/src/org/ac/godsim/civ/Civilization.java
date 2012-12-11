@@ -19,7 +19,7 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
  * (c) 2012 Don England
  *
  * @author Don England
- * @since 11-November-2012
+ * @since 11-December-2012
  */
 public class Civilization extends Entity implements GodSimConstants{
 
@@ -31,12 +31,14 @@ public class Civilization extends Entity implements GodSimConstants{
 		myColor = color;
 	}
 	
-	public void updateUnits(){
+	public void updateUnits(float deltaTime){
 		Iterator<Unit> iter = myUnits.iterator();
         while (iter.hasNext()) {
             Unit currentUnit = (Unit) iter.next();
             // TODO -- actually iterate through each action required per unit
-            currentUnit.setX(currentUnit.getX()+0.05f);
+            currentUnit.performUpdate(deltaTime);
+            //if(currentUnit.performGetType() == "gatherer")
+            //	currentUnit.setX(currentUnit.getX()+0.05f);
             //System.out.println(currentUnit.performGetType());
         }
 	}

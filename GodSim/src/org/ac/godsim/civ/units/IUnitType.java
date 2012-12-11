@@ -1,5 +1,7 @@
 package org.ac.godsim.civ.units;
 
+//import org.andengine.entity.sprite.AnimatedSprite;
+
 /**
  * (c) 2012 Don England
  *
@@ -9,4 +11,5 @@ package org.ac.godsim.civ.units;
 public abstract interface IUnitType {
 	
 	abstract public String getType();
+	abstract public void update(Unit unit, float deltaTime);
 }
