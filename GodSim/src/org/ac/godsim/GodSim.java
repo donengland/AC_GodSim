@@ -20,6 +20,7 @@ import org.ac.godsim.persistentdata.GodSimDB;
 //import org.andengine.engine.camera.BoundCamera;
 import org.andengine.engine.camera.SmoothCamera;
 import org.andengine.engine.camera.hud.HUD;
+import org.andengine.engine.handler.IUpdateHandler;
 //import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
@@ -77,7 +78,7 @@ import android.view.ViewGroup;
  * (c) 2012 Don England
  *
  * @author Don England
- * @since 10-November-2012
+ * @since 11-December-2012
  */
 public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListener, IOnAreaTouchListener{
 	// ===========================================================
@@ -294,6 +295,21 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		// we handle our own scene touches below "onAreaTouchEvent"
 		this.mScene.setOnAreaTouchListener(this);
 		this.hud.setOnAreaTouchListener(this);
+		
+		// updateHandler to allow units to respond to passing time
+		this.mScene.registerUpdateHandler(new IUpdateHandler(){
+			private float totalElasped = 0;
+			public void reset(){ }
+			
+			public void onUpdate(final float pSecondsElasped){
+				totalElasped += pSecondsElasped;
+				if(totalElasped > 10.0f){
+					System.out.println("Seconds Elasped: " + totalElasped);
+					totalElasped = 0.0f;
+				}
+			}
+		});
+		
 		
 		return this.mScene;
 	}
