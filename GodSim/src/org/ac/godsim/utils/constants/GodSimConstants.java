@@ -14,6 +14,8 @@ public interface GodSimConstants {
 	public static final int CELL_WIDTH = 32;
 	public static final int CELL_HEIGHT = CELL_WIDTH;
 	
+	public static final float gathererSpeed = 0.5f;
+	
 	public enum UNIT_STATUS{
 		waiting, moving, fighting, thinking, gathering
 	}

@@ -1,6 +1,6 @@
 package org.ac.godsim;
 
-//import org.ac.godsim.civ.Civilization;
+import org.ac.godsim.civ.Civilization;
 import java.util.List;
 
 import org.ac.godsim.civ.units.Civ;
@@ -19,9 +19,11 @@ import org.ac.godsim.controls.ScholarUp;
 import org.ac.godsim.controls.WarriorDown;
 import org.ac.godsim.controls.WarriorUp;
 import org.ac.godsim.persistentdata.GodSimDB;
+import org.ac.godsim.utils.constants.GodSimConstants;
 //import org.andengine.engine.camera.BoundCamera;
 import org.andengine.engine.camera.SmoothCamera;
 import org.andengine.engine.camera.hud.HUD;
+import org.andengine.engine.handler.IUpdateHandler;
 //import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
@@ -83,9 +85,9 @@ import android.view.ViewGroup;
  * (c) 2012 Don England
  *
  * @author Don England
- * @since 10-November-2012
+ * @since 11-December-2012
  */
-public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListener, IOnAreaTouchListener{
+public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListener, IOnAreaTouchListener, GodSimConstants{
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -148,7 +150,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	private Font mFont;
 	
 	// Temp Civilization
-	//private Civilization myCiv;
+	private Civilization myCiv;
 
 	// ===========================================================
 	// Constructors
@@ -231,6 +233,9 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 		this.mScene = new Scene();
+
+		// TODO -- temp holder for testing civilization controls via update manager
+		myCiv = new Civilization(UNIT_COLOR.red);
 		
 		try {
 			final TMXLoader tmxLoader = new TMXLoader(this.getAssets(), this.mEngine.getTextureManager(), TextureOptions.BILINEAR_PREMULTIPLYALPHA, this.getVertexBufferObjectManager(), new ITMXTilePropertiesListener() {
@@ -281,6 +286,22 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		// we handle our own scene touches below "onAreaTouchEvent"
 		this.mScene.setOnAreaTouchListener(this);
 		hud.setOnAreaTouchListener(this);
+		
+		// updateHandler to allow units to respond to passing time
+		this.mScene.registerUpdateHandler(new IUpdateHandler(){
+			private float totalElasped = 0;
+			public void reset(){ }
+			
+			public void onUpdate(final float pSecondsElasped){
+				totalElasped += pSecondsElasped;
+				if(totalElasped > 0.0333f){
+					//System.out.println("Seconds Elasped: " + totalElasped);
+					myCiv.updateUnits(totalElasped);
+					totalElasped = 0.0f;
+				}
+			}
+		});
+		
 		
 		return this.mScene;
 	}
@@ -385,6 +406,8 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		final Unit resource;
 		resource = new Unit(new Gatherer(), pX, pY, this.mWarriorTextureRegion, this.getVertexBufferObjectManager());
 		resource.animate(200, true);
+		// TODO -- temp add resources to  civilization for movement processing
+		this.myCiv.addGatherer(resource);
 
 		this.mScene.registerTouchArea(resource);
 		this.mScene.attachChild(resource);
@@ -396,7 +419,9 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		final Unit civ;
 		civ = new Unit(new Civ(), pX, pY, this.mCivilizationTextureRegion, this.getVertexBufferObjectManager());
 		civ.animate(1000, true);
-
+		// TODO -- add the civilization representation to the temp civilization
+		this.myCiv.addCiv(civ);
+		
 		this.mScene.registerTouchArea(civ);
 		this.mScene.attachChild(civ);
 	}
