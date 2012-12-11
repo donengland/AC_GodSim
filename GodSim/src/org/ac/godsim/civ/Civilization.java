@@ -34,8 +34,10 @@ public class Civilization extends Entity implements GodSimConstants{
 	public void updateUnits(){
 		Iterator<Unit> iter = myUnits.iterator();
         while (iter.hasNext()) {
-            //Unit currentUnit = (Unit) iter.next();
-            //currentUnit.update();
+            Unit currentUnit = (Unit) iter.next();
+            // TODO -- actually iterate through each action required per unit
+            currentUnit.setX(currentUnit.getX()+0.05f);
+            //System.out.println(currentUnit.performGetType());
         }
 	}
 	
