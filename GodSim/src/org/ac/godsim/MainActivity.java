@@ -63,7 +63,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemSel
 		
 		/* Delete any existing databases for testing purposes */
 		/* TODO: delete this code later */
-//		GodSimDB.deleteDB(this);
+		GodSimDB.deleteDB(this);
 		
 		/* Load the shared preferences */
 //		prefs = this.getSharedPreferences("GodSimPrefs", MODE_PRIVATE);

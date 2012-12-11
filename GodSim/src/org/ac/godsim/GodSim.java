@@ -208,10 +208,10 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		this.mLaunchPanelTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mLaunchPanelBitmapTextureAtlas, this, "control_panel.png", 0, 0);
 		this.mLaunchPanelBitmapTextureAtlas.load();
 		
-		/* This on is for an icon to launch the primary control panel */
-		this.mCloseButtonBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 32, 32, TextureOptions.DEFAULT);
-		this.mCloseButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mCloseButtonBitmapTextureAtlas, this, "close.png", 0, 0);
-		this.mCloseButtonBitmapTextureAtlas.load();
+//		/* This on is for an icon to launch the primary control panel */
+//		this.mCloseButtonBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 32, 32, TextureOptions.DEFAULT);
+//		this.mCloseButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mCloseButtonBitmapTextureAtlas, this, "close.png", 0, 0);
+//		this.mCloseButtonBitmapTextureAtlas.load();
 		
 		/* Font for control level feedback on the Hud */
 		this.mFont = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD), 12);
@@ -352,7 +352,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		final ControlPanel gathererDown;
 		
 		container = new ControlPanel(new CivMenu(), hudLeft, hudTop, mMenuContainerTextureRegion, this.getVertexBufferObjectManager());
-		close = new ControlPanel(new CloseButton(), hudLeft + hudWidth - 21, hudTop + hudHeight - 21, this.mCloseButtonTextureRegion, this.getVertexBufferObjectManager());
+		//close = new ControlPanel(new CloseButton(), hudLeft + hudWidth - 21, hudTop + hudHeight - 21, this.mCloseButtonTextureRegion, this.getVertexBufferObjectManager());
 		
 		scholarUp = new ControlPanel(new ScholarUp(), hudLeft + 60 , hudTop + 40, this.mUpArrowTextureRegion, this.getVertexBufferObjectManager());
 		scholarDown = new ControlPanel(new ScholarDown(), hudLeft + 60 , hudTop + 40+18, this.mDownArrowTextureRegion, this.getVertexBufferObjectManager());
@@ -364,7 +364,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		gathererDown = new ControlPanel(new GathererDown(), hudLeft + 60 + 85*2, hudTop + 40+18, this.mDownArrowTextureRegion, this.getVertexBufferObjectManager());
 		
 		//hud.registerTouchArea(container); //registering this conflicts with the other touch areas
-		expHud.registerTouchArea(close);
+		//expHud.registerTouchArea(close);
 		expHud.registerTouchArea(scholarUp);
 		expHud.registerTouchArea(scholarDown);
 		expHud.registerTouchArea(warriorUp);
@@ -373,7 +373,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		expHud.registerTouchArea(gathererDown);
 		
 		expHud.attachChild(container);
-		expHud.attachChild(close);
+		//expHud.attachChild(close);
 		expHud.attachChild(scholarUp);
 		expHud.attachChild(scholarDown);
 		expHud.attachChild(warriorUp);
