@@ -10,15 +10,29 @@ import org.ac.godsim.utils.constants.GodSimConstants;
  */
 public class Gatherer implements IUnitType, GodSimConstants {
 	
+	private int toBase = 1;
+	
 	public String getType(){
 		return "gatherer";
 	}
 	
 	public void update(Unit myUnit, float deltaTime){
-		//TODO -- implement update();
 		float tempX = myUnit.getX();
-		float tarX  = myUnit.getTargetX();
+		float tempY = myUnit.getY();
+		float tarX, tarY;
+		
+		if(toBase == 1){
+			tarX = myUnit.getBaseX();
+			tarY = myUnit.getBaseY();
+		}else{
+			tarX = myUnit.getTargetX();
+			tarY = myUnit.getTargetY();
+		}
+		
 		float move  = gathererSpeed * deltaTime;
+		if(tarX == tempX && tarY == tempY)
+			toBase = 1 - toBase;
+		
 		if(tarX > tempX){
 			if(tempX+move > tarX)
 				myUnit.setX(tarX);
@@ -29,6 +43,17 @@ public class Gatherer implements IUnitType, GodSimConstants {
 				myUnit.setX(tarX);
 			else
 				myUnit.setX(tempX-move);
+		}
+		if(tarY > tempY){
+			if(tempY+move > tarY)
+				myUnit.setY(tarY);
+			else
+				myUnit.setY(tempY+move);
+		} else{
+			if(tempY-move < tarY)
+				myUnit.setY(tarY);
+			else
+				myUnit.setY(tempY-move);
 		}
 	}
 }

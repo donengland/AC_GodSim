@@ -1,15 +1,10 @@
 package org.ac.godsim;
 
 import org.ac.godsim.civ.Civilization;
-import java.util.List;
-
 import org.ac.godsim.civ.units.Civ;
 import org.ac.godsim.civ.units.Gatherer;
-import org.ac.godsim.civ.units.Scholar;
 import org.ac.godsim.civ.units.Unit;
-import org.ac.godsim.civ.units.Warrior;
 import org.ac.godsim.controls.CivMenu;
-import org.ac.godsim.controls.CloseButton;
 import org.ac.godsim.controls.GathererDown;
 import org.ac.godsim.controls.GathererUp;
 import org.ac.godsim.controls.ControlPanel;
@@ -20,21 +15,12 @@ import org.ac.godsim.controls.WarriorDown;
 import org.ac.godsim.controls.WarriorUp;
 import org.ac.godsim.persistentdata.GodSimDB;
 import org.ac.godsim.utils.constants.GodSimConstants;
-//import org.andengine.engine.camera.BoundCamera;
 import org.andengine.engine.camera.SmoothCamera;
 import org.andengine.engine.camera.hud.HUD;
 import org.andengine.engine.handler.IUpdateHandler;
-//import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
-//import org.andengine.entity.IEntity;
-//import org.andengine.entity.modifier.LoopEntityModifier;
-//import org.andengine.entity.modifier.PathModifier;
-//import org.andengine.entity.modifier.PathModifier.IPathModifierListener;
-//import org.andengine.entity.modifier.PathModifier.Path;
-//import org.andengine.entity.primitive.Rectangle;
-import org.andengine.entity.IEntity;
 import org.andengine.entity.scene.IOnAreaTouchListener;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.ITouchArea;
@@ -53,12 +39,9 @@ import org.andengine.extension.tmx.TMXTiledMap;
 import org.andengine.extension.tmx.util.exception.TMXLoadException;
 //import org.andengine.input.sensor.acceleration.IAccelerationListener;
 import org.andengine.input.touch.TouchEvent;
-import org.andengine.opengl.texture.TextureManager;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
-import org.andengine.opengl.texture.atlas.bitmap.BuildableBitmapTextureAtlas;
-import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
@@ -68,16 +51,7 @@ import org.andengine.opengl.font.Font;
 import org.andengine.opengl.font.FontFactory;
 
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.PictureDrawable;
-import android.view.ViewGroup;
 
 //import android.widget.Toast;
 
@@ -117,7 +91,6 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	
 	// Storage for the tmx file, including the standard tile size
 	private TMXTiledMap mTMXTiledMap;
-	//private int tileWidth = 32;
 	
 	// store touch location for X and Y in touch handlers
 	private float camTempX;
@@ -125,7 +98,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	private float camTargetX = CAMERA_WIDTH/2;
 	private float camTargetY = CAMERA_HEIGHT/2;
 
-	//Hud top left corner
+	// Hud top left corner
 	private static int hudTop = CAMERA_HEIGHT - 91;;
 	private static int hudLeft = CAMERA_WIDTH / 6;
 	private int hudHeight = 91; //fills the bottom of the screen from the point where the hud starts
@@ -149,7 +122,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	private TextureRegion mCloseButtonTextureRegion;
 	private Font mFont;
 	
-	// Temp Civilization
+	// Civilization--concept class that holds physical representations 
 	private Civilization myCiv;
 
 	// ===========================================================
@@ -207,12 +180,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		this.mLaunchPanelBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 32, 32, TextureOptions.DEFAULT);
 		this.mLaunchPanelTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mLaunchPanelBitmapTextureAtlas, this, "control_panel.png", 0, 0);
 		this.mLaunchPanelBitmapTextureAtlas.load();
-		
-//		/* This on is for an icon to launch the primary control panel */
-//		this.mCloseButtonBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 32, 32, TextureOptions.DEFAULT);
-//		this.mCloseButtonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mCloseButtonBitmapTextureAtlas, this, "close.png", 0, 0);
-//		this.mCloseButtonBitmapTextureAtlas.load();
-		
+				
 		/* Font for control level feedback on the Hud */
 		this.mFont = FontFactory.create(this.getFontManager(), this.getTextureManager(), 256, 256, TextureOptions.BILINEAR, Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD), 12);
 		this.mFont.load();
@@ -234,7 +202,6 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 		this.mScene = new Scene();
 
-		// TODO -- temp holder for testing civilization controls via update manager
 		myCiv = new Civilization(UNIT_COLOR.red);
 		
 		try {
@@ -271,10 +238,6 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		
 		/* Create the stationary section of the game where the player can make certain adjustments 
 		 * This is called a 'hud' */
-		
-//		hudController = new GodSimHudController(this.getEngine().getCamera());
-//		hud = hudController.makeBasicHud();
-//		hud = makeBasicHud(new HUD());
 		hud = makeHudWithControls(new HUD());
 
 		
@@ -295,7 +258,7 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 			public void onUpdate(final float pSecondsElasped){
 				totalElasped += pSecondsElasped;
 				if(totalElasped > 0.0333f){
-					//System.out.println("Seconds Elasped: " + totalElasped);
+					// Update units 30 times per second regardless of hardware speed
 					myCiv.updateUnits(totalElasped);
 					totalElasped = 0.0f;
 				}
@@ -343,7 +306,6 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		final Text gathererLevel = new Text(hudLeft+85+85*2, hudTop+50, this.mFont, "3", "3".length(), this.getVertexBufferObjectManager());
 		
 		final ControlPanel container;
-		final ControlPanel close;
 		final ControlPanel scholarUp;
 		final ControlPanel scholarDown;
 		final ControlPanel warriorUp;
@@ -363,8 +325,6 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		gathererUp = new ControlPanel(new GathererUp(), hudLeft + 60 + 85*2, hudTop + 40, this.mUpArrowTextureRegion, this.getVertexBufferObjectManager());
 		gathererDown = new ControlPanel(new GathererDown(), hudLeft + 60 + 85*2, hudTop + 40+18, this.mDownArrowTextureRegion, this.getVertexBufferObjectManager());
 		
-		//hud.registerTouchArea(container); //registering this conflicts with the other touch areas
-		//expHud.registerTouchArea(close);
 		expHud.registerTouchArea(scholarUp);
 		expHud.registerTouchArea(scholarDown);
 		expHud.registerTouchArea(warriorUp);
@@ -373,7 +333,6 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		expHud.registerTouchArea(gathererDown);
 		
 		expHud.attachChild(container);
-		//expHud.attachChild(close);
 		expHud.attachChild(scholarUp);
 		expHud.attachChild(scholarDown);
 		expHud.attachChild(warriorUp);
@@ -404,9 +363,8 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	private void addResource(final float pX, final float pY) {
 		System.err.println("addResource");
 		final Unit resource;
-		resource = new Unit(new Gatherer(), pX, pY, this.mWarriorTextureRegion, this.getVertexBufferObjectManager());
+		resource = new Unit(new Gatherer(), pX, pY, this.mGathererTextureRegion, this.getVertexBufferObjectManager());
 		resource.animate(200, true);
-		// TODO -- temp add resources to  civilization for movement processing
 		this.myCiv.addGatherer(resource);
 
 		this.mScene.registerTouchArea(resource);
@@ -419,7 +377,6 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		final Unit civ;
 		civ = new Unit(new Civ(), pX, pY, this.mCivilizationTextureRegion, this.getVertexBufferObjectManager());
 		civ.animate(1000, true);
-		// TODO -- add the civilization representation to the temp civilization
 		this.myCiv.addCiv(civ);
 		
 		this.mScene.registerTouchArea(civ);
@@ -443,11 +400,6 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 		if(pSceneTouchEvent.isActionUp()) {
 			// Remove comment below to add "resources" at mouse location on release 
 			//this.addResource(pSceneTouchEvent.getX(), pSceneTouchEvent.getY());
-			
-			
-			
-			
-			
 			return true;
 		}
 		// let the handler know if we did not handle a specific message
@@ -489,14 +441,12 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	}
 	
 	
-	// removes the touched sprite, placeholder for handling menu on sprites
+	// removes the sprite, used to remove previously added sprites
+	@SuppressWarnings("unused")
 	private void removeItem(Unit unit){
 		System.err.println("removeItem");
 		System.out.println("Removed " + unit.performGetType() +"!!!!");
 		
-		// This area should know the type of sprite before removing,
-		//  but it functions as is written for now.
-		//  At this point, the actual class structure should be built from the Design_Doc -D
 		this.hud.unregisterTouchArea(unit);
 		this.hud.detachChild(unit);
 		
@@ -517,7 +467,6 @@ public class GodSim extends SimpleBaseGameActivity implements IOnSceneTouchListe
 	// Perform relative movement from starting location
 	private void moveCamera(final float pX, final float pY){
 		System.err.println("moveCamera");
-		//System.out.println("Moved (x):" + pX + "(y):" +pY);
 
 		// Move Camera target opposite from touch direction, and reset static position
 		camTargetX += camTempX - pX;

@@ -4,7 +4,7 @@ package org.ac.godsim.utils.constants;
  * (c) 2012 Don England
  *
  * @author Don England
- * @since 11-November-2012
+ * @since 12-December-2012
  */
 public interface GodSimConstants {
 	// ===========================================================
@@ -14,7 +14,8 @@ public interface GodSimConstants {
 	public static final int CELL_WIDTH = 32;
 	public static final int CELL_HEIGHT = CELL_WIDTH;
 	
-	public static final float gathererSpeed = 0.5f;
+	public static final float gathererSpeed = 20.0f;
+	public static final float warriorSpeed = 15.0f;
 	
 	public enum UNIT_STATUS{
 		waiting, moving, fighting, thinking, gathering

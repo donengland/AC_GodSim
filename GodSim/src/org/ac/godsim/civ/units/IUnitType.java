@@ -1,12 +1,10 @@
 package org.ac.godsim.civ.units;
 
-//import org.andengine.entity.sprite.AnimatedSprite;
-
 /**
  * (c) 2012 Don England
  *
  * @author Don England
- * @since 11-November-2012
+ * @since 12-December-2012
  */
 public abstract interface IUnitType {
 	

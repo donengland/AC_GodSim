@@ -26,6 +26,10 @@ public class Unit extends AnimatedSprite implements GodSimConstants{
 	// Targeting Floats
 	private float targetX;
 	private float targetY;
+	
+	// Owning Civilization coordinates
+	private float baseX;
+	private float baseY;
 		
 	// ===========================================================
 	// Constructors
@@ -35,6 +39,8 @@ public class Unit extends AnimatedSprite implements GodSimConstants{
 		super(pX, pY, pTiledTextureRegion, pVertexBufferObjectManager);
 		this.myType = type;
 		this.myId = 0;
+		this.targetX = pX;
+		this.targetY = pY;
 	}
 	
 	// ===========================================================
@@ -71,5 +77,21 @@ public class Unit extends AnimatedSprite implements GodSimConstants{
 
 	public void setTargetY(float targetY) {
 		this.targetY = targetY;
+	}
+
+	public float getBaseX() {
+		return baseX;
+	}
+
+	public void setBaseX(float baseX) {
+		this.baseX = baseX;
+	}
+
+	public float getBaseY() {
+		return baseY;
+	}
+
+	public void setBaseY(float baseY) {
+		this.baseY = baseY;
 	}
 }

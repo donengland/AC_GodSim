@@ -15,6 +15,6 @@ public class Civ implements IUnitType, GodSimConstants {
 	}
 	
 	public void update(Unit myUnit, float deltaTime){
-		//TODO -- implement update();
+		// civilizations don't move
 	}
 }

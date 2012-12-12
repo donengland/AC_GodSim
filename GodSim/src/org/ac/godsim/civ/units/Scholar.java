@@ -15,6 +15,6 @@ public class Scholar implements IUnitType, GodSimConstants {
 	}
 	
 	public void update(Unit myUnit, float deltaTime){
-		//TODO -- implement update();
+		// Scholars don't update their values
 	}
 }
