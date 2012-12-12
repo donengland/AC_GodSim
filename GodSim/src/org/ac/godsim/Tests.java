@@ -61,6 +61,15 @@ public class Tests {
 		}
 		
 		
+		//**********************************************************************************************************************
+		
+		/* TEST #5 - INSERT a new player (game number assigned automatically). Then retrieve and output the player name and game number */
+		GodSimDB.addPlayer("Fred Flintstone", "password");
+		System.err.println("Returned from adding Fred Flintstone");
+		GodSimDB.getGame("Fred Flintstone");
+		GodSimDB.removePlayer("Fred Flintstone");
+		
+		
 		
 	}
 

@@ -106,6 +106,7 @@ public class PlayerMaintenance extends Activity implements OnClickListener, OnIt
     			msgBox.setText("You cannot delete the Guest player account.");
     			break;
 			}
+    		newNameField.setText("");
     		GodSimDB.removePlayer(player);
     		feedback = player + " has been removed along with all associated game activity.";
     		msgBox.setText(feedback);
@@ -121,6 +122,12 @@ public class PlayerMaintenance extends Activity implements OnClickListener, OnIt
     		System.err.println(newName);
     		if (newName.equals("")) {
     			msgBox.setText("Please enter a replacement name.");
+    			break;
+    		}
+    		if (!GodSimDB.playerExists(newName)) {
+    			String temp = "The name " + newName + " does not exist in the database";
+    			msgBox.setText(temp);
+    			newNameField.setText("");
     			break;
     		}
     		GodSimDB.updatePlayer(player, newName);

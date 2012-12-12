@@ -191,6 +191,7 @@ public class GodSimDB {
 		
 		int nextGame = 1;
 		System.err.println(player);
+		
 		/* Check to see if this record already exists */
 		String where = PLAYER_NAME_COLUMN + "= ?";
 		String[] whereArgs = new String[] {player};
@@ -217,18 +218,6 @@ public class GodSimDB {
         	addGame(1);
         }
         cursor.close();
-        
-        /* confirm new game entry */
-        /* keep this commented in case it is useful later */
-//        Cursor cursor2 = db.query(GodSimDBOpenHelper.GAMES_TABLE, new String [] {"MAX("+GAME_COLUMN+") AS GC"}, null, null, null, null, null);
-//        if(cursor2.getCount() > 0) {
-//        	cursor2.moveToFirst();
-//        	String temp = cursor2.getString(cursor.getColumnIndex("GC"));
-//        	System.err.println(temp);
-//        	System.err.printf("new game added: %s\n", temp);
-//        }
-//    	
-//        cursor2.close();
 			  
 		/* Assign values for each row */
 		newValues.put(PLAYER_NAME_COLUMN, player);
@@ -555,6 +544,18 @@ public class GodSimDB {
 		return "Guest";
 	}
 	
+	public static Boolean playerExists(String player) {
+		SQLiteDatabase db = godSimDBOpenHelper.getReadableDatabase();
+		String where = PLAYER_NAME_COLUMN + "= ?";
+		Cursor cursor = db.query(GodSimDBOpenHelper.PLAYERS_TABLE, new String[] {PLAYER_NAME_COLUMN}, where, new String[] {player}, null, null, null);
+		if (cursor.getCount() > 0) {
+			System.err.printf("in GodSimDB.playerExists, player named %s confirmed.\n", player);
+			return true;
+		}
+		System.err.printf("in GodSimDB.playerExists, no player named %s found.\n", player);
+		return false;
+	}
+	
 	/** Use this method to retrieve the number of the game associated with a 
 	 * given player. The player name is the String variable that matches the 
 	 * name in the spinner.
@@ -562,9 +563,20 @@ public class GodSimDB {
 	 * @return
 	 */
 	public static int getGame(String player) {
-		String temp = getOneValue(GodSimDBOpenHelper.PLAYERS_TABLE, PLAYER_NAME_COLUMN, player, GAME_COLUMN);
-		System.err.printf("game %s\n", temp);
-		return Integer.parseInt(temp);
+		System.err.printf("In getGame, looking for the game associated with %s\n", player);
+
+		SQLiteDatabase db = godSimDBOpenHelper.getReadableDatabase();
+		String where = PLAYER_NAME_COLUMN + "= ?";
+		Cursor cursor = db.query(GodSimDBOpenHelper.PLAYERS_TABLE, new String[] {GAME_COLUMN+" AS GC"}, where, new String[] {player}, null, null, null);
+		System.err.printf("found the game for %s\n", player);
+		
+		if (cursor.getCount()>0) {
+			cursor.moveToFirst();
+			return cursor.getInt(cursor.getColumnIndex("GC"));
+		}
+		
+		/* If we get here, the unit does not exist. Return -1 to indicate error. */
+		return -1;
 	}
 	
 	public static String getOneValue (String table, String searchCol, String searchVal, String returnCol) {
